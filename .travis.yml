@@ -1,0 +1,24 @@
+language: python
+branches:
+  only:
+    - "demo"
+    - "dev"
+    - "dev-v2"
+    - "master"
+    - "staging"
+python:
+  - '2.7'
+install:
+  - pip install -r requirements/ci.txt
+services:
+  - mongodb
+  - redis-server
+script:
+  - flake8 */tests/ */forms.py hikaya/ --exclude=settings,migrations,models.py,hikaya/__init__.py
+  - python manage.py test
+after_success:
+  - coveralls
+before_install:
+  - mongo test --eval 'db.createUser({user:"test", pwd:"test", roles:["readWrite"]});'
+env:
+  - CELERY_BROKER_URL=redis://redis@localhost:6379/0

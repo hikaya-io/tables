@@ -1,0 +1,36 @@
+.hikaya-btn-primary {
+    background: #25CED1;
+    color: #ffffff;
+}
+
+.hikaya-btn-seccondary {
+    background: #FF8360;
+    color: #ffffff;
+}
+
+.hikaya-btn-default {
+    background: #ffffff;
+    border: 1px solid #25CED1;
+    color: #25CED1;
+}
+
+.hikaya-btn-default:hover {
+    background: #ffffff;
+    border: 1px solid #737581;
+    color: #737581;
+}
+
+.hikaya-primary {
+    background-color: #25CED1;
+    color: #ffffff
+}
+
+.hikaya-secondary {
+    background-color: #FF8360;
+    color: #ffffff
+}
+
+.hikaya-default {
+    background-color: #737581;
+    color: #ffffff;
+}

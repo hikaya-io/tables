@@ -1,0 +1,58 @@
+*.log
+*.pot
+*.pyc
+# Python bytecode:
+*.py[co]
+
+# Packaging files:
+*.egg*
+
+# Editor temp files:
+*.swp
+*~
+
+# Sphinx docs:
+build
+
+# SQLite3 database files:
+*.db
+
+# Logs:
+*.log
+
+# Virtualenv
+frds-venv/
+
+# Allvritualenv
+venv/
+venv-tt/
+
+# Conf
+conf/awstats.conf
+conf/
+djangocosign/
+local-dev.py
+local_secret.py
+client_secrets.json
+
+# Fixtures
+read_types_local.json
+sites_local.json
+tags_local.json
+tolasites_local.json
+
+# Misc.
+.idea/
+.DS_Store
+.history/
+.idea
+media/
+*.crt
+*.key
+error.log
+*.secret
+*.secret.yml
+src/
+
+# Templates
+login_types.html

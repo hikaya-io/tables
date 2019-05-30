@@ -1,0 +1,10 @@
+[
+{
+    "fields": {
+        "domain": "tolasites.org",
+        "name": "TolaSites"
+    },
+    "model": "sites.site",
+    "pk": 1
+}
+]

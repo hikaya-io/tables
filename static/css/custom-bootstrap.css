@@ -1,0 +1,42 @@
+.panel-primary {
+    border-color: #25CED1;
+}
+
+.panel-primary>.panel-heading {
+    color: #fff;
+    background-color: #25CED1;
+    border-color: #25CED1;
+}
+
+.panel-success {
+    border-color: #FF8360;
+}
+
+.panel-success>.panel-heading {
+    color: #fff;
+    background-color: #FF8360;
+    border-color: #FF8360;
+}
+
+.panel-default {
+    border-color: #737581;
+}
+
+.panel-default>.panel-heading {
+    color: #fff;
+    background-color: #737581;
+    border-color: #737581;
+}
+
+.row h2, label {
+    color: #737581
+}
+
+body h2, body p {
+    color: #737581
+
+}
+.alert {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

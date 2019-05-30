@@ -1,0 +1,62 @@
+{% extends "base.html" %} 
+{% block page_title %}Data Source{% endblock %}
+
+{% block extra_js_in_header %}
+<script type="text/javascript" src="https://js.live.net/v7.2/OneDrive.js"></script>
+<script type="text/javascript">
+    function launchOneDrivePicker(){
+        var odOptions = {
+            clientId: "{{ client_id }}",
+            action: "query",
+            multiSelect: true,
+            advanced: {
+                redirectUri: "{{ redirect_uri }}"
+            },
+            success: function(data) {
+                $("#id_onedrive_access_token").val(data.accessToken);
+                $("#id_onedrive_file").val(data.value[0].id);
+            }
+        };
+        OneDrive.open(odOptions);
+    }
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% if 'onedrive_file' in form.fields %}
+        <button onClick="launchOneDrivePicker()">Open from OneDrive</button>
+    {% endif %}
+
+    <ul>
+    {% for key, value in data.items %}
+        <li>{{ key }} => {{ value }}</li>
+    {% endfor %}
+    </ul>
+    {% csrf_token %}
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+    <input type="hidden" name="read_id" value="{{ read_id }}">
+
+    {% if get_tables %}
+        <h3>Tables using this source</h3>
+        <ul>
+        {% for item in get_tables %}
+            <li><a href="/silo_detail/{{item.id}}">{{ item.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+
+{% endblock content %}
+
+{% block extra_js_in_body %}
+<script type="text/javascript">
+"use strict";
+    $(document).ready(function() {
+        var autopull_frequency = $("#id_autopull_frequency").val();
+        if (!uniqueautopull_frequency_col) {
+            alert("Reminder: A Unique column must be set for the autopull to work");
+        }
+    });
+</script>
+{% endblock %}

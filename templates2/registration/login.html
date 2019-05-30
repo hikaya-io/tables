@@ -1,0 +1,40 @@
+{% extends "base.html" %} {% block title %}Login{% endblock %} {% block content %}
+<!-- {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="login"> -->
+<div class="container">
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<h2>Login to Hikaya - Tables</h2>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-3"></div>
+		<div class="col-md-6">
+			<div class="panel panel-success">
+				<div class="panel-heading">Fill in your login details</div>
+				<div class="panel-body">
+          <form action="/accounts/login" method="POST">
+            {% csrf_token %}
+						<label for="">Username</label>
+						<input type="text" class="form-control" name="username" />
+						<br />
+						<label for="">Password</label>
+						<input type="password" class="form-control" name="password" />
+						<br />
+						<div class="text-right">
+							<button type="reset" class="btn btn-md hikaya-btn-default">
+                <i class="fa fa-undo"></i> Cancel
+              </button>
+							<button type="submit" class="btn btn-md hikaya-btn-primary">
+                <i class="fa fa-save"></i> Submit
+              </button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3"></div>
+	</div>
+</div>
+{% endblock %}
