@@ -55,7 +55,7 @@
                                 </td>
                                 <td class="tableShareCol">
                                     <div style="width: 100%; " class="input-group-btn">
-                                        <a href="/export_silo_form/{{ silo.id }}" class="btn btn-xs btn-default">Export</a>
+                                        <a href="/export_silo_form/{{ silo.id }}/" class="btn btn-xs btn-default">Export</a>
                                         <!-- <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Export </button>
                                         <ul class="dropdown-menu" role="menu">
                                             <li class="divider"></li>
@@ -136,7 +136,7 @@
                                                 </small></span>
                                     {% else %}
                                         {% for r in silo.reads.all %}
-                                            <a href="/show_read/{{ r.id }}" >
+                                            <a href="/show_read/{{ r.id }}/" >
                                                 <small> {{ r.read_name }} ({{r.type.read_type}})</small>
                                             </a> <br />
                                         {% endfor %}
@@ -144,12 +144,12 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="/silo_detail/{{ silo.id }}" class="btn btn-xs btn-success">View/Edit</span></a>
+                                        <a href="/silo_detail/{{ silo.id }}/" class="btn btn-xs btn-success">View/Edit</span></a>
                                      </div>
                                 </td>
                                 <td>
                                     <div style="width: 100%; " class="input-group-btn">
-                                        <a href="/export_silo_form/{{ silo.id }}" class="btn btn-xs btn-default">Export</a>
+                                        <a href="/export_silo_form/{{ silo.id }}/" class="btn btn-xs btn-default">Export</a>
                                     </div><!-- /btn-group -->
                                 </td>
                             </tr>
@@ -195,7 +195,7 @@
                                         </small></span>
                                     {% else %}
                                         {% for r in silo.reads.all %}
-                                            <a href="/show_read/{{ r.id }}" >
+                                            <a href="/show_read/{{ r.id }}/" >
                                                 <small> {{ r.read_name }} ({{r.type.read_type}})</small>
                                             </a> <br />
                                         {% endfor %}
@@ -203,12 +203,12 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="/silo_detail/{{ silo.id }}" class="btn btn-xs btn-success">View/Edit</span></a>
+                                        <a href="/silo_detail/{{ silo.id }}/" class="btn btn-xs btn-success">View/Edit</span></a>
                                      </div>
                                 </td>
                                 <td>
                                     <div style="width: 100%; " class="input-group-btn">
-                                        <a href="/export_silo_form/{{ silo.id }}" class="btn btn-xs btn-default">Export</a>
+                                        <a href="/export_silo_form/{{ silo.id }}/" class="btn btn-xs btn-default">Export</a>
                                     </div><!-- /btn-group -->
                                 </td>
                             </tr>
