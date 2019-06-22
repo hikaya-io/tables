@@ -2,7 +2,7 @@ from django.test import TestCase
 
 import factories
 from hikaya import auth_pipeline
-from silo.models import TolaUser
+from silo.models import HikayaUser
 from django.contrib.auth.models import User
 
 # TODO Extend OAuth tests
@@ -41,14 +41,14 @@ class OAuthTest(TestCase):
     """
 
     def setUp(self):
-        self.tola_user = factories.TolaUser()
+        self.hikaya_user = factories.TolaUser()
         self.org = factories.Organization()
         self.country = factories.Country()
 
-    def test_user_to_tola_with_tola_user_data(self):
+    def test_user_to_hikaya_with_hikaya_user_data(self):
         response = {
-            'tola_user': {
-                'tola_user_uuid': '13dac835-3860-4d9d-807e-d36a3c106057',
+            'hikaya_user': {
+                'hikaya_user_uuid': '13dac835-3860-4d9d-807e-d36a3c106057',
                 'name': 'John Lennon',
                 'employee_number': None,
                 'title': 'mr',
@@ -61,14 +61,14 @@ class OAuthTest(TestCase):
         }
 
         user = factories.User(first_name='John', last_name='Lennon')
-        auth_pipeline.user_to_tola(None, user, response)
-        tola_user = TolaUser.objects.get(name='John Lennon')
+        auth_pipeline.user_to_hikaya(None, user, response)
+        hikaya_user = HikayaUser.objects.get(name='John Lennon')
 
-        self.assertEqual(tola_user.name, response['tola_user']['name'])
-        self.assertEqual(tola_user.organization.name, self.org.name)
+        self.assertEqual(hikaya_user.name, response['hikaya_user']['name'])
+        self.assertEqual(hikaya_user.organization.name, self.org.name)
 
-    def test_user_to_tola_without_tola_user_data(self):
-        # TolaUser will be created with the default Org
+    def test_user_to_hikaya_without_hikaya_user_data(self):
+        # HikayaUser will be created with the default Org
         response = {
             'displayName': 'John Lennon',
             'emails': [{
@@ -78,26 +78,26 @@ class OAuthTest(TestCase):
         }
 
         user = factories.User(first_name='John', last_name='Lennon')
-        auth_pipeline.user_to_tola(None, user, response)
-        tola_user = TolaUser.objects.get(user=user)
+        auth_pipeline.user_to_hikaya(None, user, response)
+        hikaya_user = HikayaUser.objects.get(user=user)
 
-        self.assertEqual(tola_user.name, response.get('displayName'))
-        self.assertEqual(tola_user.organization.name, self.org.name)
-        self.assertEqual(tola_user.country.country, self.country.country)
+        self.assertEqual(hikaya_user.name, response.get('displayName'))
+        self.assertEqual(hikaya_user.organization.name, self.org.name)
+        self.assertEqual(hikaya_user.country.country, self.country.country)
 
-        # TolaUser will be retrieved and Org won't be the default anymore
+        # HikayaUser will be retrieved and Org won't be the default anymore
         new_org = factories.Organization(name='New Organization')
-        tola_user.organization = new_org
-        tola_user.save()
-        auth_pipeline.user_to_tola(None, user, response)
-        tola_user = TolaUser.objects.get(user=user)
+        hikaya_user.organization = new_org
+        hikaya_user.save()
+        auth_pipeline.user_to_hikaya(None, user, response)
+        hikaya_user = HikayaUser.objects.get(user=user)
 
-        self.assertEqual(tola_user.organization.name, new_org.name)
+        self.assertEqual(hikaya_user.organization.name, new_org.name)
 
-    def test_user_to_tola_org_extra_fields(self):
+    def test_user_to_hikaya_org_extra_fields(self):
         response = {
-            'tola_user': {
-                'tola_user_uuid': '13dac835-3860-4d9d-807e-d36a3c106057',
+            'hikaya_user': {
+                'hikaya_user_uuid': '13dac835-3860-4d9d-807e-d36a3c106057',
                 'name': 'John Lennon',
                 'employee_number': None,
                 'title': 'mr',
@@ -115,11 +115,11 @@ class OAuthTest(TestCase):
         }
 
         user = factories.User(first_name='John', last_name='Lennon')
-        auth_pipeline.user_to_tola(None, user, response)
-        tola_user = TolaUser.objects.get(name='John Lennon')
+        auth_pipeline.user_to_hikaya(None, user, response)
+        hikaya_user = HikayaUser.objects.get(name='John Lennon')
 
-        self.assertEqual(tola_user.name, response['tola_user']['name'])
-        self.assertEqual(tola_user.organization.name, self.org.name)
+        self.assertEqual(hikaya_user.name, response['hikaya_user']['name'])
+        self.assertEqual(hikaya_user.organization.name, self.org.name)
 
     def test_get_or_create_user_without_user(self):
         """

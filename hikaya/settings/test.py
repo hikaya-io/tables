@@ -17,8 +17,8 @@ DATABASES = {
 MONGODB_DATABASES = {
     "default": {
         "name": "test",
-        "host": os.getenv("TOLATABLES_MONGODB_HOST", '127.0.0.1'),
-        "port": int(os.getenv("TOLATABLES_MONGODB_PORT", 27017)),
+        "host": os.getenv("HIKAYATABLES_MONGODB_HOST", '127.0.0.1'),
+        "port": int(os.getenv("HIKAYATABLES_MONGODB_PORT", 27017)),
         "username": "test",
         "password": "test",
     },

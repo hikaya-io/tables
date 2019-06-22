@@ -254,14 +254,14 @@ class ReadTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.factory = RequestFactory()
-        self.tola_user = factories.TolaUser()
+        self.hikaya_user = factories.TolaUser()
         factories.ReadType.create_batch(7)
 
     def test_new_read_post(self):
         read_type = ReadType.objects.get(read_type="ONA")
         upload_file = open('silo/tests/sample_data/test.csv', 'rb')
         params = {
-            'owner': self.tola_user.user.pk,
+            'owner': self.hikaya_user.user.pk,
             'type': read_type.pk,
             'read_name': 'TEST READ SOURCE',
             'description': 'TEST DESCRIPTION for test read source',
@@ -271,7 +271,7 @@ class ReadTest(TestCase):
             'file_data': upload_file,
         }
         request = self.factory.post(self.new_read_url, data=params)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
 
         response = showRead(request, 1)
         if response.status_code == 302:
@@ -299,30 +299,30 @@ class SiloTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.factory = RequestFactory()
-        self.tola_user = factories.TolaUser()
+        self.hikaya_user = factories.TolaUser()
         factories.ReadType.create_batch(7)
 
     @patch('hikaya.activity_proxy.get_workflowteams')
     def test_new_silo(self, mock_get_workflowteams):
         mock_get_workflowteams.return_value = []
         # Create a New Silo
-        silo = factories.Silo(owner=self.tola_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user)
         self.assertEqual(silo.pk, 1)
 
         # Fetch the silo that just got created above
         request = self.factory.get(self.silo_edit_url)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = edit_silo(request, silo.pk)
         self.assertEqual(response.status_code, 200)
 
         # update the silo that just got created above
         params = {
-            'owner': self.tola_user.user.pk,
+            'owner': self.hikaya_user.user.pk,
             'name': 'Test Silo Updated',
             'description': 'Adding this description in a unit-test.',
         }
         request = self.factory.post(self.silo_edit_url, data=params)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         request._dont_enforce_csrf_checks = True
         response = edit_silo(request, silo.pk)
         if response.status_code == 302:
@@ -336,7 +336,7 @@ class SiloTest(TestCase):
         read_type = ReadType.objects.get(read_type="CSV")
         upload_file = open('silo/tests/sample_data/test.csv', 'rb')
         read = factories.Read(
-            owner=self.tola_user.user, type=read_type,
+            owner=self.hikaya_user.user, type=read_type,
             read_name="TEST CSV IMPORT",  description="unittest",
             file_data=SimpleUploadedFile(upload_file.name, upload_file.read())
         )
@@ -345,7 +345,7 @@ class SiloTest(TestCase):
             "new_silo": "Test CSV Import",
         }
         request = self.factory.post(self.upload_csv_url, data=params)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         request._dont_enforce_csrf_checks = True
         response = uploadFile(request, read.pk)
         self.assertEqual(response.status_code, 302)
@@ -353,7 +353,7 @@ class SiloTest(TestCase):
 
         silo = Silo.objects.get(name="Test CSV Import")
         request = self.factory.get(self.silo_detail_url)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
 
         response = silo_detail(request, silo.pk)
         self.assertEqual(response.status_code, 200)
@@ -372,7 +372,7 @@ class SiloTest(TestCase):
         read_type = ReadType.objects.get(read_type="CSV")
         upload_file = open('silo/tests/sample_data/test.csv', 'rb')
         params = {
-            'owner': self.tola_user.user.pk,
+            'owner': self.hikaya_user.user.pk,
             'type': read_type.pk,
             'read_name': 'TEST READ SOURCE',
             'description': 'TEST DESCRIPTION for test read source',
@@ -395,11 +395,11 @@ class FormulaColumn(TestCase):
         self.client = Client()
         self.factory = RequestFactory()
         self.user = factories.User()
-        self.user.set_password('tola123')
+        self.user.set_password('hikaya123')
         self.user.save()
         factories.TolaUser(user=self.user)
         self.silo = factories.Silo(owner=self.user)
-        self.client.login(username=self.user.username, password='tola123')
+        self.client.login(username=self.user.username, password='hikaya123')
 
     def test_getNewFormulaColumn(self):
         request = self.factory.get(self.new_formula_columh_url)
@@ -482,11 +482,11 @@ class ColumnOrder(TestCase):
         self.client = Client()
         self.factory = RequestFactory()
         self.user = factories.User()
-        self.user.set_password('tola123')
+        self.user.set_password('hikaya123')
         self.user.save()
         factories.TolaUser(user=self.user)
         self.silo = factories.Silo(owner=self.user)
-        self.client.login(username=self.user.username, password='tola123')
+        self.client.login(username=self.user.username, password='hikaya123')
 
     def test_get_edit_column_order(self):
         request = self.factory.get(self.url)
@@ -523,11 +523,11 @@ class ColumnFilter(TestCase):
         self.client = Client()
         self.factory = RequestFactory()
         self.user = factories.User()
-        self.user.set_password('tola123')
+        self.user.set_password('hikaya123')
         self.user.save()
         factories.TolaUser(user=self.user)
         self.silo = factories.Silo(owner=self.user)
-        self.client.login(username=self.user.username, password='tola123')
+        self.client.login(username=self.user.username, password='hikaya123')
 
     def test_get_editColumnOrder(self):
         addColsToSilo(self.silo, ['a', 'b', 'c', 'd', 'e', 'f'])
@@ -596,10 +596,10 @@ class RemoveSourceTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = factories.User()
-        self.user.set_password('tola123')
+        self.user.set_password('hikaya123')
         self.user.save()
         factories.TolaUser(user=self.user)
-        self.client.login(username=self.user.username, password='tola123')
+        self.client.login(username=self.user.username, password='hikaya123')
 
     def test_remove_read(self):
         silo = factories.Silo(owner=self.user)
@@ -799,7 +799,7 @@ class TestImportJson(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = factories.User()
-        self.user.set_password('tola123')
+        self.user.set_password('hikaya123')
         self.user.save()
         self.read_type = ReadType.objects.create(read_type="Ona")
         self.read = Read.objects.create(
@@ -808,7 +808,7 @@ class TestImportJson(TestCase):
                      'englishmonarchs&format=json')
         self.silo = factories.Silo(owner=self.user, reads=[self.read])
         factories.TolaUser(user=self.user)
-        self.client.login(username=self.user.username, password='tola123')
+        self.client.login(username=self.user.username, password='hikaya123')
 
     def test_JSONImport(self):
         filename = os.path.join(os.path.dirname(__file__),
@@ -837,11 +837,11 @@ class TestDeleteSilo(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = factories.User()
-        self.user.set_password('tola123')
+        self.user.set_password('hikaya123')
         self.user.save()
         factories.TolaUser(user=self.user)
         self.silo = factories.Silo(owner=self.user)
-        self.client.login(username=self.user.username, password='tola123')
+        self.client.login(username=self.user.username, password='hikaya123')
 
     def test_deleteAuto(self):
         silo_id = self.silo.id

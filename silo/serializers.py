@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from hikaya.models import LoggedUser
 from silo.models import (Silo, Read, ReadType, Tag, Organization, Country,
-                         TolaUser, WorkflowLevel1, WorkflowLevel2)
+                         HikayaUser, WorkflowLevel1, WorkflowLevel2)
 
 
 class PublicSiloSerializer(serializers.HyperlinkedModelSerializer):
@@ -30,7 +30,7 @@ class TolaUserSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = TolaUser
+        model = HikayaUser
         fields = '__all__'
         depth = 1
 
@@ -56,13 +56,13 @@ class SiloSerializer(serializers.HyperlinkedModelSerializer):
 class CustomFormSerializer(serializers.ModelSerializer):
     fields = serializers.JSONField()
     level1_uuid = serializers.CharField(max_length=255)
-    tola_user_uuid = serializers.CharField(max_length=255)
+    hikaya_user_uuid = serializers.CharField(max_length=255)
     form_uuid = serializers.CharField(max_length=255)
 
     class Meta:
         model = Silo
         fields = ('id', 'name', 'description', 'fields', 'level1_uuid',
-                  'tola_user_uuid', 'form_uuid')
+                  'hikaya_user_uuid', 'form_uuid')
 
 
 class TagSerializer(serializers.HyperlinkedModelSerializer):

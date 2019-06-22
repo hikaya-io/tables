@@ -47,7 +47,7 @@ class MicrosoftOAuth2(BaseOAuth2):
     REDIRECT_STATE = False
     DEFAULT_SCOPE = ['User.Read']
 
-    #from tola.settings import local
+    #from hikaya.settings import local
     from django.conf import settings
     """
     SOCIAL_AUTH_MICROSOFT_OAUTH2_RESOURCE = 'https://graph.microsoft.com/v1.0/'
@@ -74,7 +74,7 @@ class MicrosoftOAuth2(BaseOAuth2):
         # TODO Remove this atrocity
         uri = self.redirect_uri
         uri = uri.replace('http', 'https')
-        uri = uri.replace('127.0.0.1', 'tola.test')
+        uri = uri.replace('127.0.0.1', 'hikaya.test')
         uri = uri.replace(':8000', '')
         uri = uri[:len(uri)-1]
         #print(self.redirect_uri)

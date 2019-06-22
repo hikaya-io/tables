@@ -55,7 +55,7 @@
                               {% endfor %}
                           {% else %}
                               <p>Login with your {{ site.name }} Tola Account.</p>
-                              <a href="{% url 'social:begin' 'tola' %}" class="btn btn-go"><i class="fa fa-key"></i> Tola Login </a>
+                              <a href="{% url 'social:begin' 'hikaya' %}" class="btn btn-go"><i class="fa fa-key"></i> Tola Login </a>
 
                               <p>Login with your {{ site.name }} Google Account.</p>
                               <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-go"><i class="fa fa-google"></i> Google Login </a>
@@ -112,17 +112,17 @@
 
             <h3>Tola Tools</h3>
             <div class="list-group">
-                <a href="https://tola-activity.mercycorps.org" class="list-group-item active">
+                <a href="https://hikaya-activity.mercycorps.org" class="list-group-item active">
                     TolaActivity
                 </a>
                 <li class="list-group-item"><a href="{{site.activity_url}}">{{site.activity_url}}</a> Country Dashboard, Indicator Tracking and Project Workflow.</li>
                 <li class="list-group-item">Status: {% if data_up == 0 %} SERVER IS DOWN {% else %} Server is up!{% endif %}</li>
             </div>
             <div class="list-group">
-                <a href="http://tola.work" class="list-group-item active">
+                <a href="http://hikaya.work" class="list-group-item active">
                     TolaWork
                 </a>
-                <li class="list-group-item"><a href="http://tola.work">http://tola.work</a> Submit support tickets and find help documentation, request and track new features, follow and update documentation.</li>
+                <li class="list-group-item"><a href="http://hikaya.work">http://hikaya.work</a> Submit support tickets and find help documentation, request and track new features, follow and update documentation.</li>
                 <li class="list-group-item">Status: {% if data_up == 0 %} SERVER IS DOWN {% else %} Server is up!{% endif %}</li>
             </div>
 

@@ -74,11 +74,11 @@ class ExportToGSheetTest(TestCase):
 
     def setUp(self):
         self.org = factories.Organization()
-        self.tola_user = factories.TolaUser(organization=self.org)
+        self.hikaya_user = factories.TolaUser(organization=self.org)
 
         self.read = factories.Read(read_name="test_data",
-                                   owner=self.tola_user.user)
-        self.silo = factories.Silo(owner=self.tola_user.user,
+                                   owner=self.hikaya_user.user)
+        self.silo = factories.Silo(owner=self.hikaya_user.user,
                                    reads=[self.read])
         self._import_json(self.silo, self.read)
 
@@ -102,11 +102,11 @@ class ExportToGSheetTest(TestCase):
         url = url + '?&query='+str(query)+'&shown_cols='+str(cols)
 
         request = self.factory.get(url, follow=True)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = gviews_v4.export_to_gsheet(request, self.silo.pk)
         cols.append('_id')
 
-        mock_gsheet_helper.assert_called_once_with(self.tola_user.user,
+        mock_gsheet_helper.assert_called_once_with(self.hikaya_user.user,
                                                    spreadsheet_id,
                                                    self.silo.pk, query,
                                                    cols)
@@ -123,10 +123,10 @@ class ExportToGSheetTest(TestCase):
 
         url = reverse('export_new_gsheet', kwargs={'id': self.silo.pk})
         request = self.factory.get(url, follow=True)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = gviews_v4.export_to_gsheet(request, self.silo.pk)
 
-        mock_gsheet_helper.assert_called_once_with(self.tola_user.user,
+        mock_gsheet_helper.assert_called_once_with(self.hikaya_user.user,
                                                    spreadsheet_id,
                                                    self.silo.pk,
                                                    query,
@@ -145,7 +145,7 @@ class ExportToGSheetTest(TestCase):
 
         with self.assertRaises(ValueError):
             request = self.factory.get(url, follow=True)
-            request.user = self.tola_user.user
+            request.user = self.hikaya_user.user
             gviews_v4.export_to_gsheet(request, self.silo.pk)
 
         mock_gsheet_helper.assert_not_called()
@@ -161,7 +161,7 @@ class ExportToGSheetTest(TestCase):
 
         with self.assertRaises(ValueError):
             request = self.factory.get(url, follow=True)
-            request.user = self.tola_user.user
+            request.user = self.hikaya_user.user
             gviews_v4.export_to_gsheet(request, self.silo.pk)
 
         mock_gsheet_helper.assert_not_called()
@@ -174,7 +174,7 @@ class ExportToGSheetTest(TestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             request = self.factory.get(url, follow=True)
-            request.user = self.tola_user.user
+            request.user = self.hikaya_user.user
             gviews_v4.export_to_gsheet(request, 0)
 
         mock_gsheet_helper.assert_not_called()
@@ -191,10 +191,10 @@ class ExportToGSheetTest(TestCase):
                                           '"rank", "opn"]'
 
         request = self.factory.get(url, follow=True)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = gviews_v4.export_to_gsheet(request, self.silo.pk)
 
-        mock_gsheet_helper.assert_called_once_with(self.tola_user.user,
+        mock_gsheet_helper.assert_called_once_with(self.hikaya_user.user,
                                                    spreadsheet_id,
                                                    self.silo.pk,
                                                    query,
@@ -213,10 +213,10 @@ class ExportToGSheetTest(TestCase):
                     '}}]}&shown_cols=[]'
 
         request = self.factory.get(url, follow=True)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = gviews_v4.export_to_gsheet(request, self.silo.pk)
 
-        mock_gsheet_helper.assert_called_once_with(self.tola_user.user,
+        mock_gsheet_helper.assert_called_once_with(self.hikaya_user.user,
                                                    None,
                                                    self.silo.pk,
                                                    query,
@@ -241,10 +241,10 @@ class ExportToGSheetTest(TestCase):
             "redirect_uri_after_step2": True
         }]
 
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = gviews_v4.export_to_gsheet(request, self.silo.pk)
 
-        mock_gsheet_helper.assert_called_once_with(self.tola_user.user,
+        mock_gsheet_helper.assert_called_once_with(self.hikaya_user.user,
                                                    spreadsheet_id,
                                                    self.silo.pk,
                                                    query,
@@ -291,7 +291,7 @@ class OAuthTest(TestCase):
         logging.disable(logging.ERROR)
 
         self.org = factories.Organization()
-        self.tola_user = factories.TolaUser(organization=self.org)
+        self.hikaya_user = factories.TolaUser(organization=self.org)
         self.factory = APIRequestFactory()
 
     def tearDown(self):
@@ -299,7 +299,7 @@ class OAuthTest(TestCase):
 
     def test_store_oauth2_credential_method_notallowed(self):
         request = self.factory.get('')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = gviews_v4.store_oauth2_credential(request)
 
         self.assertEqual(response.status_code, 405)
@@ -315,7 +315,7 @@ class OAuthTest(TestCase):
             'access_token': 'mytestaccesstoken',
         }
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = gviews_v4.store_oauth2_credential(request)
         content = json.loads(response.content)
 
@@ -335,7 +335,7 @@ class OAuthTest(TestCase):
             'expires_in': 3573,
         }
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = gviews_v4.store_oauth2_credential(request)
         content = json.loads(response.content)
 
@@ -345,7 +345,7 @@ class OAuthTest(TestCase):
 
     def test_store_oauth2_credential_no_access_token(self):
         request = self.factory.post('', {})
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
 
         with self.assertRaises(AccessTokenCredentialsError):
             gviews_v4.store_oauth2_credential(request)
@@ -354,7 +354,7 @@ class OAuthTest(TestCase):
 class ImportFromGSheetHelperTest(TestCase):
     def setUp(self):
         self.org = factories.Organization()
-        self.tola_user = factories.TolaUser(organization=self.org)
+        self.hikaya_user = factories.TolaUser(organization=self.org)
         self.read = factories.Read(read_name='Test Read')
         self.silo = factories.Silo(reads=[self.read])
 
@@ -389,7 +389,7 @@ class ImportFromGSheetHelperTest(TestCase):
         mock_get_or_create_read.return_value = self.read
 
         result = gviews_v4.import_from_gsheet_helper(
-            self.tola_user.user, self.silo.id, self.silo.name, 1234)
+            self.hikaya_user.user, self.silo.id, self.silo.name, 1234)
 
         self.silo = Silo.objects.get(id=self.silo.id)
         self.assertEqual(result, expected_result)
@@ -426,7 +426,7 @@ class ImportFromGSheetHelperTest(TestCase):
         mock_get_gsheet_metadata.return_value = (None, external_msg)
 
         result = gviews_v4.import_from_gsheet_helper(
-            self.tola_user.user, self.silo.id, self.silo.name, None)
+            self.hikaya_user.user, self.silo.id, self.silo.name, None)
 
         self.assertEqual(result, expected_result)
 
@@ -446,7 +446,7 @@ class ImportFromGSheetHelperTest(TestCase):
         mock_get_gsheet_metadata.return_value = (None, external_msg)
 
         result = gviews_v4.import_from_gsheet_helper(
-            self.tola_user.user, self.silo.id, self.silo.name, None)
+            self.hikaya_user.user, self.silo.id, self.silo.name, None)
 
         self.assertEqual(result, [mock_credential_obj])
 
@@ -462,7 +462,7 @@ class ImportFromGSheetHelperTest(TestCase):
         mock_get_credential_obj.return_value = msg
 
         result = gviews_v4.import_from_gsheet_helper(
-            self.tola_user.user, self.silo.id, self.silo.name, 1234)
+            self.hikaya_user.user, self.silo.id, self.silo.name, 1234)
         self.assertEqual(result, [msg])
 
     @patch('silo.gviews_v4._get_or_create_read')
@@ -491,7 +491,7 @@ class ImportFromGSheetHelperTest(TestCase):
         mock_get_or_create_read.return_value = self.read
 
         result = gviews_v4.import_from_gsheet_helper(
-            self.tola_user.user, self.silo.id, self.silo.name, 1234)
+            self.hikaya_user.user, self.silo.id, self.silo.name, 1234)
         self.assertEqual(result, expected_result)
 
     @patch('silo.gviews_v4._get_or_create_read')
@@ -535,7 +535,7 @@ class ImportFromGSheetHelperTest(TestCase):
         mock_get_or_create_read.return_value = self.read
 
         result = gviews_v4.import_from_gsheet_helper(
-            self.tola_user.user, self.silo.id, self.silo.name, 1234)
+            self.hikaya_user.user, self.silo.id, self.silo.name, 1234)
         self.assertEqual(result, expected_result)
 
         lvss = LabelValueStore.objects.filter(silo_id=self.silo.id)
@@ -574,7 +574,7 @@ class ImportFromGSheetHelperTest(TestCase):
         mock_get_or_create_read.return_value = self.read
 
         result = gviews_v4.import_from_gsheet_helper(
-            self.tola_user.user, self.silo.id, self.silo.name, 1234)
+            self.hikaya_user.user, self.silo.id, self.silo.name, 1234)
         self.assertEqual(result, expected_result)
 
     @patch('silo.gviews_v4._get_or_create_read')
@@ -625,7 +625,7 @@ class ImportFromGSheetHelperTest(TestCase):
         mock_get_or_create_read.return_value = self.read
 
         result = gviews_v4.import_from_gsheet_helper(
-            self.tola_user.user, self.silo.id, self.silo.name, 1234,
+            self.hikaya_user.user, self.silo.id, self.silo.name, 1234,
             partialcomplete=True)
         self.assertEqual(result, ([], expected_result))
 
@@ -672,7 +672,7 @@ class ImportFromGSheetHelperTest(TestCase):
         mock_get_or_create_read.return_value = self.read
 
         result = gviews_v4.import_from_gsheet_helper(
-            self.tola_user.user, self.silo.id, self.silo.name, 1234)
+            self.hikaya_user.user, self.silo.id, self.silo.name, 1234)
         self.assertEqual(result, expected_result)
 
         lvss = LabelValueStore.objects.filter(silo_id=self.silo.id)
@@ -690,7 +690,7 @@ class ImportFromGSheetHelperTest(TestCase):
 class GetGSheetMetaDataTest(TestCase):
     def setUp(self):
         self.org = factories.Organization()
-        self.tola_user = factories.TolaUser(organization=self.org)
+        self.hikaya_user = factories.TolaUser(organization=self.org)
         self.read = factories.Read(read_name='Test Read')
 
     @patch('silo.gviews_v4._get_authorized_service')
@@ -702,7 +702,7 @@ class GetGSheetMetaDataTest(TestCase):
             get().execute.return_value = mock_service_execute
 
         spreadsheet, error = gviews_v4._get_gsheet_metadata(
-            mock_credential_obj, 1234, self.tola_user.user)
+            mock_credential_obj, 1234, self.hikaya_user.user)
 
         self.assertIsNone(error)
         self.assertEqual(spreadsheet, mock_service_execute)
@@ -719,7 +719,7 @@ class GetGSheetMetaDataTest(TestCase):
         gviews_v4._get_authorized_service().spreadsheets = mock_service_execute
 
         spreadsheet, error = gviews_v4._get_gsheet_metadata(
-            mock_credential_obj, 1234, self.tola_user.user)
+            mock_credential_obj, 1234, self.hikaya_user.user)
 
         expected_error = {
             'credential': [mock_new_credential_obj]
@@ -740,7 +740,7 @@ class GetGSheetMetaDataTest(TestCase):
         gviews_v4._get_authorized_service().spreadsheets = mock_service_execute
 
         spreadsheet, error = gviews_v4._get_gsheet_metadata(
-            mock_credential_obj, 1234, self.tola_user.user)
+            mock_credential_obj, 1234, self.hikaya_user.user)
 
         expected_error = {
             'msg': 'ERROR: Msg Test',
@@ -756,7 +756,7 @@ class FetchDataGSheetTest(TestCase):
     def setUp(self):
         logging.disable(logging.ERROR)
         self.org = factories.Organization()
-        self.tola_user = factories.TolaUser(organization=self.org)
+        self.hikaya_user = factories.TolaUser(organization=self.org)
         self.read = factories.Read(read_name='Test Read')
         self.silo = factories.Silo(reads=[self.read])
 

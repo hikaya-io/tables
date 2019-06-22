@@ -9,7 +9,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from silo.models import TolaUser
+from silo.models import HikayaUser
 from silo.serializers import TolaUserSerializer
 from hikaya.forms import (RegistrationForm, NewUserRegistrationForm,
                           NewTolaUserRegistrationForm)
@@ -35,20 +35,20 @@ def register(request):
     """
     if request.user.is_superuser:
         form_user = NewUserRegistrationForm(request.POST)
-        form_tolauser = NewTolaUserRegistrationForm(request.POST)
+        form_hikayauser = NewTolaUserRegistrationForm(request.POST)
 
-        if form_user.is_valid() and form_tolauser.is_valid() and \
-                request.POST.get('tola_user_uuid'):
+        if form_user.is_valid() and form_hikayauser.is_valid() and \
+                request.POST.get('hikaya_user_uuid'):
             user = form_user.save()
 
-            tolauser = form_tolauser.save(commit=False)
-            tolauser.user = user
-            tolauser.organization = form_tolauser.cleaned_data.get('org')
-            tolauser.name = ' '.join([user.first_name, user.last_name]).strip()
-            tolauser.tola_user_uuid = request.POST.get('tola_user_uuid')
-            tolauser.save()
+            hikayauser = form_hikayauser.save(commit=False)
+            hikayauser.user = user
+            hikayauser.organization = form_hikayauser.cleaned_data.get('org')
+            hikayauser.name = ' '.join([user.first_name, user.last_name]).strip()
+            hikayauser.hikaya_user_uuid = request.POST.get('hikaya_user_uuid')
+            hikayauser.save()
             serializer = TolaUserSerializer(
-                tolauser, context={'request': request})
+                hikayauser, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -61,7 +61,7 @@ def profile(request):
     is logged in otherwise redirect them to registration version
     """
     if request.user.is_authenticated:
-        obj = get_object_or_404(TolaUser, user=request.user)
+        obj = get_object_or_404(HikayaUser, user=request.user)
         form = RegistrationForm(request.POST or None, instance=obj,
                                 initial={'username': request.user})
 

@@ -15,14 +15,14 @@ class ReportsViewTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.user = factories.User()
-        self.tola_user = factories.TolaUser(user=self.user)
+        self.hikaya_user = factories.TolaUser(user=self.user)
 
     def test_list_own_reports(self):
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         factories.Silo(name='Test Share Report',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        reads=[read],
                        public=False,
                        shared=[],
@@ -36,17 +36,17 @@ class ReportsViewTest(TestCase):
 
     def test_list_reports_shared_with_organization(self):
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         factories.Silo(name='Test Share Report',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        reads=[read],
                        public=False,
                        shared=[],
                        share_with_organization=True)
 
         request = self.factory.get('')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.list_table_dashboards(request)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Test Share Report')
@@ -54,13 +54,13 @@ class ReportsViewTest(TestCase):
     def test_list_reports_shared_with_users_organization(self):
         request_user = factories.User(username='Another User')
         factories.TolaUser(user=request_user,
-                           organization=self.tola_user.organization)
+                           organization=self.hikaya_user.organization)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         factories.Silo(name='Test Share Report',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        reads=[read],
                        public=False,
                        shared=[],
@@ -77,10 +77,10 @@ class ReportsViewTest(TestCase):
         factories.TolaUser(user=request_user)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         factories.Silo(name='Test Share Report',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        reads=[read],
                        public=False,
                        shared=[],
@@ -94,13 +94,13 @@ class ReportsViewTest(TestCase):
     def test_list_reports_not_share_with_organization(self):
         request_user = factories.User(username='Another User')
         factories.TolaUser(user=request_user,
-                           organization=self.tola_user.organization)
+                           organization=self.hikaya_user.organization)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         factories.Silo(name='Test Share Report',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        reads=[read],
                        public=False,
                        shared=[],
@@ -116,10 +116,10 @@ class ReportsViewTest(TestCase):
 
         request_user = factories.User(username='Another User')
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         factories.Silo(name='Test Share Report',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        reads=[read],
                        public=False,
                        shared=[request_user],
@@ -136,10 +136,10 @@ class ReportsViewTest(TestCase):
         factories.TolaUser(user=request_user)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         factories.Silo(name='Test Share Report',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        reads=[read],
                        public=True,
                        shared=[],

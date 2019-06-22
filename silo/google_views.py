@@ -45,12 +45,12 @@ def get_authorized_sp_client(credential_json):
         client_id = credential_json['client_id'],
         client_secret = credential_json['client_secret'],
         scope = 'https://spreadsheets.google.com/feeds',
-        user_agent = "TOLA",
+        user_agent = "HIKAYA",
         access_token = credential_json['access_token'],
         refresh_token = credential_json['refresh_token'])
 
     # Instantiate the SpreadsheetClient object
-    sp_client = gdata.spreadsheets.client.SpreadsheetsClient(source="TOLA")
+    sp_client = gdata.spreadsheets.client.SpreadsheetsClient(source="HIKAYA")
 
     # authorize the SpreadsheetClient object
     sp_client = token.authorize(sp_client)

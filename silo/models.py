@@ -46,14 +46,14 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
 
 
-class TolaSites(models.Model):
+class HikayaSites(models.Model):
     name = models.CharField(blank=True, null=True, max_length=255)
     agency_name = models.CharField(blank=True, null=True, max_length=255)
     agency_url = models.CharField(blank=True, null=True, max_length=255)
     activity_url = models.CharField(blank=True, null=True, max_length=255)
-    tola_report_url = models.CharField(blank=True, null=True, max_length=255)
-    tola_activity_user = models.CharField(blank=True, null=True, max_length=255)
-    tola_activity_token = models.CharField(blank=True, null=True, max_length=255)
+    hikaya_report_url = models.CharField(blank=True, null=True, max_length=255)
+    hikaya_activity_user = models.CharField(blank=True, null=True, max_length=255)
+    hikaya_activity_token = models.CharField(blank=True, null=True, max_length=255)
     site = models.ForeignKey(Site)
     privacy_disclaimer = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now=False, blank=True, null=True)
@@ -72,19 +72,19 @@ class TolaSites(models.Model):
             self.created = timezone.now()
         else:
             self.updated = timezone.now()
-        return super(TolaSites, self).save(*args, **kwargs)
+        return super(HikayaSites, self).save(*args, **kwargs)
 
 
-class TolaSitesAdmin(admin.ModelAdmin):
+class HikayaSitesAdmin(admin.ModelAdmin):
     list_display = ('name', 'agency_name')
-    display = 'Tola Site'
+    display = 'Hikaya Site'
     list_filter = ('name',)
     search_fields = ('name','agency_name')
 
 
 class Organization(models.Model):
     organization_uuid = models.CharField(max_length=255, verbose_name='Organization UUID', default=uuid.uuid4, unique=True)
-    name = models.CharField("Organization Name", max_length=255, blank=True, default="TolaData")
+    name = models.CharField("Organization Name", max_length=255, blank=True, default="HikayaData")
     description = models.TextField("Description/Notes", max_length=765, null=True, blank=True)
     organization_url = models.CharField(blank=True, null=True, max_length=255)
     level_1_label = models.CharField("Project/Program Organization Level 1 label", default="Program", max_length=255, blank=True)
@@ -213,13 +213,13 @@ TITLE_CHOICES = (
 )
 
 
-class TolaUser(models.Model):
-    tola_user_uuid = models.CharField(max_length=255, verbose_name='TolaUser UUID', default=uuid.uuid4, unique=True)
+class HikayaUser(models.Model):
+    hikaya_user_uuid = models.CharField(max_length=255, verbose_name='Hikaya User UUID', default=uuid.uuid4, unique=True)
     title = models.CharField(blank=True, null=True, max_length=3, choices=TITLE_CHOICES)
     organization = models.ForeignKey(Organization, blank=True, null=True)
     name = models.CharField("Given Name", blank=True, null=True, max_length=100)
     employee_number = models.IntegerField("Employee Number", blank=True, null=True)
-    user = models.OneToOneField(User, unique=True, related_name='tola_user')
+    user = models.OneToOneField(User, unique=True, related_name='hikaya_user')
     country = models.ForeignKey(Country, blank=True, null=True)
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True)
     tables_api_token = models.CharField(blank=True, null=True, max_length=255)
@@ -237,12 +237,12 @@ class TolaUser(models.Model):
             self.created = timezone.now()
         else:
             self.updated = timezone.now()
-        return super(TolaUser, self).save(*args, **kwargs)
+        return super(HikayaUser, self).save(*args, **kwargs)
 
 
-class TolaUserAdmin(admin.ModelAdmin):
+class HikayaUserAdmin(admin.ModelAdmin):
     list_display = ('name', 'country')
-    display = 'Tola User'
+    display = 'Hikaya User'
     list_filter = ('country',)
     search_fields = ('name','country__country','title')
 

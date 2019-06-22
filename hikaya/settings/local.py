@@ -10,7 +10,7 @@ MANAGERS = ADMINS
 
 ########## DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = True #if os.getenv('TOLA_DEBUG') == 'True' else False
+DEBUG = True #if os.getenv('HIKAYA_DEBUG') == 'True' else False
 
 ########## END DEBUG CONFIGURATION
 
@@ -20,12 +20,12 @@ DEBUG = True #if os.getenv('TOLA_DEBUG') == 'True' else False
 try:
     DATABASES = {
         'default': {
-            'ENGINE': os.getenv('TOLATABLES_DB_ENGINE', 'django.db.backends.postgresql'),
-            'NAME': os.getenv('TOLATABLES_DB_NAME', 'activity_table'),
-            'USER': os.getenv('TOLATABLES_DB_USER', 'hikaya'),
-            'PASSWORD': os.getenv('TOLATABLES_DB_PASS', 'activitydb'),
-            'HOST': os.getenv('TOLATABLES_DB_HOST', 'localhost'),
-            'PORT': os.getenv('TOLATABLES_DB_PORT', 5432),
+            'ENGINE': os.getenv('HIKAYATABLES_DB_ENGINE', 'django.db.backends.postgresql'),
+            'NAME': os.getenv('HIKAYATABLES_DB_NAME', 'hikaya_tables'),
+            'USER': os.getenv('HIKAYATABLES_DB_USER', 'hikaya'),
+            'PASSWORD': os.getenv('HIKAYATABLES_DB_PASS', 'activitydb'),
+            'HOST': os.getenv('HIKAYATABLES_DB_HOST', 'localhost'),
+            'PORT': os.getenv('HIKAYATABLES_DB_PORT', 5432),
         }
     }
 except KeyError:
@@ -34,17 +34,17 @@ except KeyError:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'tolatables',
+            'NAME': 'hikaya_tables',
         }
     }
     print("DATABASES: {}".format(DATABASES))
 ########## END DATABASE CONFIGURATION
 
 # Hosts/domain names that are valid for this site
-if os.getenv('TOLA_HOSTNAME') is not None:
-    ALLOWED_HOSTS = os.environ['TOLA_HOSTNAME'].split(',')
+if os.getenv('HIKAYA_HOSTNAME') is not None:
+    ALLOWED_HOSTS = os.environ['HIKAYA_HOSTNAME'].split(',')
 
-USE_X_FORWARDED_HOST = True if os.getenv('TOLA_USE_X_FORWARDED_HOST') == 'True' else False
+USE_X_FORWARDED_HOST = True if os.getenv('HIKAYA_USE_X_FORWARDED_HOST') == 'True' else False
 
 ########## GOOGLE CLIENT CONFIG ###########
 if os.getenv('TABLES_URL') is not None:
@@ -59,8 +59,8 @@ else:
 
 
 ####### Tola Activity API #######
-TOLA_ACTIVITY_API_URL = os.getenv('TOLA_ACTIVITY_API_URL', '')
-TOLA_ACTIVITY_API_TOKEN = os.getenv('TOLA_ACTIVITY_API_TOKEN')
+HIKAYA_ACTIVITY_API_URL = os.getenv('HIKAYA_ACTIVITY_API_URL', '')
+HIKAYA_ACTIVITY_API_TOKEN = os.getenv('HIKAYA_ACTIVITY_API_TOKEN')
 
 ########## CACHE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#caches
@@ -75,7 +75,7 @@ CACHES = {
 ########## END CACHE CONFIGURATION
 
 try:
-    template_dir = os.environ['TOLATABLES_TEMPLATE_DIR']
+    template_dir = os.environ['HIKAYATABLES_TEMPLATE_DIR']
 except KeyError:
     template_dir = "templates2"
 
@@ -116,14 +116,14 @@ ACTIVITY_URL = os.getenv('ACTIVITY_URL')
 TABLES_URL = os.getenv('TABLES_URL')
 TABLES_LOGIN_URL = '/accounts/login'
 
-SOCIAL_AUTH_TOLA_KEY = os.getenv('SOCIAL_AUTH_TOLA_KEY')
-SOCIAL_AUTH_TOLA_SECRET = os.getenv('SOCIAL_AUTH_TOLA_SECRET')
+SOCIAL_AUTH_HIKAYA_KEY = os.getenv('SOCIAL_AUTH_HIKAYA_KEY')
+SOCIAL_AUTH_HIKAYA_SECRET = os.getenv('SOCIAL_AUTH_HIKAYA_SECRET')
 
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_BROKER_URL')
 
 # Hosts to deploy onto
-env.hosts = ['.toladata.io', '.hikaya.io']
+env.hosts = ['.hikayadata.io', '.hikaya.io']
 
 # Where your project code lives on the server
 env.project_root = DJANGO_ROOT

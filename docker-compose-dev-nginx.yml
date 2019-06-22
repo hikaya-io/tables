@@ -8,7 +8,7 @@ services:
     expose:
       - "8080"
     environment:
-      - TOLA_HOSTNAME=localhost,127.0.0.1,tables
+      - HIKAYA_HOSTNAME=localhost,127.0.0.1,tables
       - CORS_ORIGIN_WHITELIST=
       - DJANGO_SETTINGS_MODULE=hikaya.settings.local
 

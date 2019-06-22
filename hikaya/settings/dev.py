@@ -12,7 +12,7 @@ DEV_MIDDLEWARE = (
 
 MIDDLEWARE = MIDDLEWARE + DEV_MIDDLEWARE
 
-if os.getenv('TOLA_HOSTNAME') is not None:
-    ALLOWED_HOSTS = os.getenv('TOLA_HOSTNAME').split(',')
+if os.getenv('HIKAYA_HOSTNAME') is not None:
+    ALLOWED_HOSTS = os.getenv('HIKAYA_HOSTNAME').split(',')
 
 OFFLINE_MODE = True

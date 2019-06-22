@@ -40,7 +40,7 @@ from hikaya.util import importJSON, save_data_to_silo, getSiloColumnNames, \
 from commcare.tasks import fetchCommCareData
 from .serializers import *
 from .models import Silo, Read, ReadType, ThirdPartyTokens, LabelValueStore, \
-    Tag, UniqueFields, MergedSilosFieldMapping, TolaSites, PIIColumn, \
+    Tag, UniqueFields, MergedSilosFieldMapping, HikayaSites, PIIColumn, \
     DeletedSilos, FormulaColumn, CeleryTask
 from .forms import get_read_form, UploadForm, SiloForm, MongoEditForm, \
     NewColumnForm, EditColumnForm, OnaLoginForm
@@ -72,7 +72,7 @@ class IndexView(LoginRequiredMixin, View):
         # tags = Tag.objects.filter(owner=request.user).\
         #            annotate(times_tagged=Count('silos')).\
         #            values('name', 'times_tagged').order_by('-times_tagged')[:8]
-        site_name = TolaSites.objects.values_list('name', flat=True).get(site_id=1)
+        site_name = HikayaSites.objects.values_list('name', flat=True).get(site_id=1)
 
         context = {
             'silos_user': silos_user,
@@ -461,11 +461,12 @@ def edit_silo(request, id):
     request_user_org = None
     owner_user_org = None
 
-    if(hasattr(request.user, 'tola_user') and
-            hasattr(edited_silo.owner, 'tola_user')):
-        request_user_org = request.user.tola_user.organization
-        owner_user_org = edited_silo.owner.tola_user.organization
-
+    if(hasattr(request.user, 'hikaya_user') and
+            hasattr(edited_silo.owner, 'hikaya_user')):
+        request_user_org = request.user.hikaya_user.organization
+        owner_user_org = edited_silo.owner.hikaya_user.organization
+    print('ID::::', id)
+    print('Request Organization::::', request_user_org)
     is_silo_shared_with_user = Silo.objects.filter(
         Q(pk=id, shared__id=request.user.pk) |
         Q(pk=id, workflowlevel1__level1_uuid__in=user_wfl1s)).exists()
@@ -978,7 +979,7 @@ def list_silos(request):
     shared_silos = Silo.objects.filter(
         Q(shared__id=user.pk) |
         Q(share_with_organization=True,
-          owner__tola_user__organization=user.tola_user.organization) |
+          owner__hikaya_user__organization=user.hikaya_user.organization) |
         Q(workflowlevel1__level1_uuid__in=user_wfl1s)).\
         exclude(owner=user).prefetch_related("reads")
 
@@ -1079,9 +1080,9 @@ def silo_detail(request, silo_id):
 
     request_user_org = None
     owner_user_org = None
-    if hasattr(request.user, 'tola_user') and hasattr(silo.owner, 'tola_user'):
-        request_user_org = request.user.tola_user.organization
-        owner_user_org = silo.owner.tola_user.organization
+    if hasattr(request.user, 'hikaya_user') and hasattr(silo.owner, 'hikaya_user'):
+        request_user_org = request.user.hikaya_user.organization
+        owner_user_org = silo.owner.hikaya_user.organization
 
     is_silo_shared_with_user = Silo.objects.filter(
         Q(pk=silo_id, shared__id=request.user.pk) |
@@ -1097,6 +1098,7 @@ def silo_detail(request, silo_id):
     else:
         messages.error(request,
                        "You do not have permission to view this table.")
+    print('Test::::::::::::::::::', silo.owner)
     return render(
         request,
         "display/silo.html",

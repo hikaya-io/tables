@@ -9,7 +9,7 @@ pipeline:
   test:
     image: python:${PYTHON_VERSION}
     environment:
-      - TOLATABLES_MONGODB_HOST=mongo
+      - HIKAYATABLES_MONGODB_HOST=mongo
       - CELERY_BROKER_URL=redis://redis@redis:6379/0
     secrets: [SECRET_PASS]
     commands:
@@ -23,7 +23,7 @@ pipeline:
     image: plugins/docker
     insecure: true
     registry: registry.hikaya.io
-    repo: registry.hikaya.io/toladata/tolatables
+    repo: registry.hikaya.io/hikaya/tables
     file: Dockerfile
     auto_tag: true
     secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
@@ -40,7 +40,7 @@ pipeline:
     repo: Humanitec/deployment
     branch: master
     deploy_to: marathon
-    params: "APP_ID=/tolatables,APP_GROUP=toladata,APP_NAME=Tables,APP_BRANCH=dev-v2,APP_COMMIT=${DRONE_COMMIT_SHA},APP_TAG=${DRONE_TAG},APP_IMAGE=registry.hikaya.io/toladata/tolatables:${DRONE_TAG##v}"
+    params: "APP_ID=/tables,APP_GROUP=hikayadata,APP_NAME=Tables,APP_BRANCH=dev-v2,APP_COMMIT=${DRONE_COMMIT_SHA},APP_TAG=${DRONE_TAG},APP_IMAGE=registry.hikaya.io/hikayadata/tables:${DRONE_TAG##v}"
     when:
       event: [tag]
       status: [success]

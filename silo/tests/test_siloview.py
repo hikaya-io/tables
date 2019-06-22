@@ -18,7 +18,7 @@ class SiloListViewTest(TestCase):
         factories.Silo.create_batch(2)
         self.factory = APIRequestFactory()
         self.user = factories.User(first_name='Homer', last_name='Simpson')
-        self.tola_user = factories.TolaUser(user=self.user)
+        self.hikaya_user = factories.TolaUser(user=self.user)
 
     def test_list_silo_superuser(self):
         request = self.factory.get('/api/silo/')
@@ -31,13 +31,13 @@ class SiloListViewTest(TestCase):
 
     def test_list_silo_normal_user(self):
         request = self.factory.get('/api/silo/')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = SiloViewSet.as_view({'get': 'list'})
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 0)
 
-        factories.Silo(owner=self.tola_user.user)
+        factories.Silo(owner=self.hikaya_user.user)
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
@@ -47,8 +47,8 @@ class SiloListViewTest(TestCase):
         factories.Silo(owner=user, shared=[self.user])
 
         request = self.factory.get('/api/silo/?user_uuid={}'.format(
-            self.tola_user.tola_user_uuid))
-        request.user = self.tola_user.user
+            self.hikaya_user.hikaya_user_uuid))
+        request.user = self.hikaya_user.user
         view = SiloViewSet.as_view({'get': 'list'})
         response = view(request)
         self.assertEqual(response.status_code, 200)
@@ -61,7 +61,7 @@ class SiloRetrieveViewTest(TestCase):
         self.silos = factories.Silo.create_batch(2)
         self.factory = APIRequestFactory()
         self.user = factories.User(first_name='Homer', last_name='Simpson')
-        self.tola_user = factories.TolaUser(user=self.user)
+        self.hikaya_user = factories.TolaUser(user=self.user)
 
     def test_retrieve_silo_superuser(self):
         request = self.factory.get('/api/silo/')
@@ -74,12 +74,12 @@ class SiloRetrieveViewTest(TestCase):
 
     def test_retrieve_silo_normal_user(self):
         request = self.factory.get('/api/silo/')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = SiloViewSet.as_view({'get': 'retrieve'})
         response = view(request, id=self.silos[0].id)
         self.assertEqual(response.status_code, 404)
 
-        silo = factories.Silo(name='My Silo', owner=self.tola_user.user)
+        silo = factories.Silo(name='My Silo', owner=self.hikaya_user.user)
         response = view(request, id=silo.id)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['name'], silo.name)
@@ -95,11 +95,11 @@ class SiloDataViewTest(TestCase):
 
     def setUp(self):
         self.factory = APIRequestFactory()
-        self.tola_user = factories.TolaUser()
+        self.hikaya_user = factories.TolaUser()
 
         self.read = factories.Read(read_name="test_data",
-                                   owner=self.tola_user.user)
-        self.silo = factories.Silo(owner=self.tola_user.user,
+                                   owner=self.hikaya_user.user)
+        self.silo = factories.Silo(owner=self.hikaya_user.user,
                                    reads=[self.read])
         # Have to remove the created lvs
         lvss = LabelValueStore.objects.filter(silo_id=self.silo.id)
@@ -124,7 +124,7 @@ class SiloDataViewTest(TestCase):
 
     def test_data_silo_owner(self):
         request = self.factory.get('/api/silo/{}/data'.format(self.silo.id))
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = SiloViewSet.as_view({'get': 'data'})
         response = view(request, id=self.silo.id)
         self.assertEqual(response.status_code, 200)
@@ -134,11 +134,11 @@ class SiloDataViewTest(TestCase):
 
     def test_data_silo_empty_table(self):
         read = factories.Read(read_name="test_empty",
-                              owner=self.tola_user.user)
-        silo = factories.Silo(owner=self.tola_user.user, reads=[read])
+                              owner=self.hikaya_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user, reads=[read])
 
         request = self.factory.get('/api/silo/{}/data'.format(silo.id))
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = SiloViewSet.as_view({'get': 'data'})
         response = view(request, id=silo.id)
         self.assertEqual(response.status_code, 200)
@@ -150,7 +150,7 @@ class SiloDataViewTest(TestCase):
         query = '{"opn": "2015-11"}'
         request = self.factory.get('/api/silo/{}/data?query={}'.format(
             self.silo.id, query))
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = SiloViewSet.as_view({'get': 'data'})
         response = view(request, id=self.silo.id)
         self.assertEqual(response.status_code, 200)
@@ -163,7 +163,7 @@ class SiloDataViewTest(TestCase):
         group = '{"_id": null,"total_cnt":{"$sum":"$cnt"}}'
         request = self.factory.get('/api/silo/{}/data?group={}'.format(
             self.silo.id, group))
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = SiloViewSet.as_view({'get': 'data'})
         response = view(request, id=self.silo.id)
         self.assertEqual(response.status_code, 200)
@@ -179,7 +179,7 @@ class SiloDataViewTest(TestCase):
         group = '{"_id": null,"total_cnt":{"$sum":"$cnt"}}'
         request = self.factory.get('/api/silo/{}/data?query={}&group='
                                    '{}'.format(self.silo.id, query, group))
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = SiloViewSet.as_view({'get': 'data'})
         response = view(request, id=self.silo.id)
         self.assertEqual(response.status_code, 200)
@@ -194,7 +194,7 @@ class SiloDataViewTest(TestCase):
         query = '{"opn": "2015-11"}'
         request = self.factory.get('/api/silo/{}/data?query={}'.format(
             self.silo.id, query))
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = SiloViewSet.as_view({'get': 'data'})
         response = view(request, id=self.silo.id)
         self.assertEqual(response.status_code, 200)

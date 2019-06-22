@@ -5,7 +5,7 @@ from django import forms
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth.models import User
 
-from silo.models import Organization, TolaUser
+from silo.models import Organization, HikayaUser
 
 
 class RegistrationForm(UserChangeForm):
@@ -26,7 +26,7 @@ class RegistrationForm(UserChangeForm):
         self.fields['created'].widget.attrs['disabled'] = "disabled"
 
     class Meta:
-        model = TolaUser
+        model = HikayaUser
         fields = '__all__'
 
     helper = FormHelper()
@@ -71,7 +71,7 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
     Form for registering a new account.
     """
     class Meta:
-        model = TolaUser
+        model = HikayaUser
         fields = ['title', 'privacy_disclaimer_accepted']
 
     org = forms.CharField()

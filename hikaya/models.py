@@ -6,9 +6,9 @@ import json
 
 class LoggedUser(models.Model):
     username = models.CharField(max_length=30, primary_key=True)
-    country = models.CharField(max_length=100, blank=False)
+    country = models.CharField(max_length=100, blank=False, default='Germany')
     email = models.CharField(max_length=100, blank=False,
-                             default='user@mercycorps.org')
+                             default='user@hikaya.io')
 
     def __unicode__(self):
         return self.username

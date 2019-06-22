@@ -3,7 +3,7 @@ from uuid import uuid4
 from django.contrib.auth.models import User
 from social_core.utils import slugify, module_member
 
-from silo.models import TolaUser, Country, Organization
+from silo.models import HikayaUser, Country, Organization
 
 USER_FIELDS = ['username', 'email']
 
@@ -73,13 +73,13 @@ def get_or_create_user(strategy, details, backend, user=None, *args, **kwargs):
     return {'is_new': False}
 
 
-def user_to_tola(backend, user, response, *args, **kwargs):
+def user_to_hikaya(backend, user, response, *args, **kwargs):
     # Only import fields to Tables that are required
-    if response.get('tola_user'):
-        remote_user = response.get('tola_user')
+    if response.get('hikaya_user'):
+        remote_user = response.get('hikaya_user')
         remote_org = response.get('organization')
-        tola_user_fields = {
-            'tola_user_uuid': remote_user['tola_user_uuid'],
+        hikaya_user_fields = {
+            'hikaya_user_uuid': remote_user['hikaya_user_uuid'],
             'name': remote_user['name'],
             'employee_number': remote_user['employee_number'],
             'title': remote_user['title'],
@@ -101,11 +101,11 @@ def user_to_tola(backend, user, response, *args, **kwargs):
         organization, org_created = Organization.objects.update_or_create(
             data_org, organization_uuid=data_org['organization_uuid'])
 
-        tola_user_fields['organization'] = organization
+        hikaya_user_fields['organization'] = organization
 
-        TolaUser.objects.update_or_create(tola_user_fields, user=user)
+        HikayaUser.objects.update_or_create(hikaya_user_fields, user=user)
     else:
-        userprofile, created = TolaUser.objects.get_or_create(user=user)
+        userprofile, created = HikayaUser.objects.get_or_create(user=user)
         if created:
             default_country = Country.objects.first()
             default_organization = Organization.objects.first()

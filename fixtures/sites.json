@@ -1,7 +1,7 @@
 [
 {
     "fields": {
-        "domain": "tolasites.org",
+        "domain": "hikayasites.org",
         "name": "TolaSites"
     },
     "model": "sites.site",

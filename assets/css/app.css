@@ -37,21 +37,21 @@ button:focus,
   outline: none;
 }
 
-.navbar-tola {
+.navbar-hikaya {
   /* TolaTables Brand Color: */
   background-color: #f5f5f5;
 }
 
-.navbar-tola .navbar-nav > li > a {
+.navbar-hikaya .navbar-nav > li > a {
   color: #15A0B2;
 }
 
-.navbar-tola .navbar-nav > li > a:hover,
-.navbar-tola .navbar-nav > li > a:focus,
-.navbar-tola .navbar-nav > li.active > a,
-.navbar-tola .navbar-nav > li.active > a:hover,
-.navbar-tola .navbar-nav > li.active > a:focus,
-.navbar-tola .navbar-nav .dropdown.open a.dropdown-toggle {
+.navbar-hikaya .navbar-nav > li > a:hover,
+.navbar-hikaya .navbar-nav > li > a:focus,
+.navbar-hikaya .navbar-nav > li.active > a,
+.navbar-hikaya .navbar-nav > li.active > a:hover,
+.navbar-hikaya .navbar-nav > li.active > a:focus,
+.navbar-hikaya .navbar-nav .dropdown.open a.dropdown-toggle {
   color: #15A0B2;
   background-color: rgba(0, 0, 0, .15);
 }

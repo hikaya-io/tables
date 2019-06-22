@@ -15,8 +15,8 @@ from silo.models import (
     Silo as SiloM,
     Tag as TagM,
     ThirdPartyTokens as ThirdPartyTokensM,
-    TolaSites as TolaSitesM,
-    TolaUser as TolaUserM,
+    HikayaSites as TolaSitesM,
+    HikayaUser as TolaUserM,
     UniqueFields as UniqueFieldsM,
     WorkflowLevel1 as WorkflowLevel1M
 )

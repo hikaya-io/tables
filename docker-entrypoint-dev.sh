@@ -15,7 +15,7 @@ $celery_cmd &
 
 echo "Running the server"
 if [ "$nginx" == "true" ]; then
-    PYTHONUNBUFFERED=1 gunicorn -b 0.0.0.0:8080 tola.wsgi --reload
+    PYTHONUNBUFFERED=1 gunicorn -b 0.0.0.0:8080 hikaya.wsgi --reload
 else
     PYTHONUNBUFFERED=1 python manage.py runserver 0.0.0.0:8080
 fi

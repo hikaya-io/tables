@@ -237,7 +237,7 @@ var tableObject = function (json, id) {
                 if (eval("data[" + i + "].hasOwnProperty('" + name + "')")) {
                     var cell_value = eval('data[' + i + '].' + name);
                     if (name == 'gait_id') {
-                        cell_value = "<a href='https://gait.mercycorps.org/editgrant.vm?GrantID=" + cell_value + "' target='_blank'>" + cell_value + "</a>";
+                        cell_value = "<a href=''></a>";
                     }
                     row.appendChild(createTD(cell_value));
                 }

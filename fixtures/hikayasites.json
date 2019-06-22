@@ -10,7 +10,7 @@
         "agency_name": "YourOrganization",
         "privacy_disclaimer": "A Privacy Disclaimer"
     },
-    "model": "silo.tolasites",
+    "model": "silo.hikayasites",
     "pk": 1
 }
 ]

@@ -12,7 +12,7 @@ from silo.api import (CountryViewSet, CustomFormViewSet, OrganizationViewSet,
                       SilosByUser, SiloViewSet, TagViewSet, TolaUserViewSet,
                       UserViewSet, WorkflowLevel1ViewSet,
                       WorkflowLevel2ViewSet)
-from hikaya import views as tola_views
+from hikaya import views as hikaya_views
 
 admin.autodiscover()
 
@@ -29,7 +29,7 @@ router.register(r'tag', TagViewSet)
 router.register(r'country', CountryViewSet)
 router.register(r'customform', CustomFormViewSet, base_name='customform')
 router.register(r'organization', OrganizationViewSet)
-router.register(r'tolauser', TolaUserViewSet)
+router.register(r'hikayauser', TolaUserViewSet)
 router.register(r'workflowlevel1', WorkflowLevel1ViewSet)
 router.register(r'workflowlevel2', WorkflowLevel2ViewSet)
 
@@ -37,7 +37,7 @@ urlpatterns = [
     url(r'^api/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
-    url(r'^api/docs/', tola_views.schema_view),
+    url(r'^api/docs/', hikaya_views.schema_view),
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.IndexView.as_view(), name='index'),
@@ -117,11 +117,11 @@ urlpatterns = [
         gviews_v4.get_sheets_from_google_spreadsheet, name='get_sheets'),
 
     url(r'^accounts/login/$', auth.views.login, name='login'),
-    url(r'^accounts/logout/$', tola_views.logout_view, name='logout'),
-    url(r'^accounts/register/$', tola_views.register, name='register'),
+    url(r'^accounts/logout/$', hikaya_views.logout_view, name='logout'),
+    url(r'^accounts/register/$', hikaya_views.register, name='register'),
 
-    url(r'^accounts/profile/$', tola_views.profile, name='profile'),
-    url(r'^board/$', tola_views.BoardView.as_view(), name='board'),
+    url(r'^accounts/profile/$', hikaya_views.profile, name='profile'),
+    url(r'^board/$', hikaya_views.BoardView.as_view(), name='board'),
 
     url(r'^tables_login/$', views.tablesLogin, name='tables_login'),
 
@@ -129,7 +129,7 @@ urlpatterns = [
         views.renewAutoJobs, name='renewsAutoJobs'),
 
     # Auth backend URL's
-    url(r'', tola_views.user_login, name='login'),
+    url(r'', hikaya_views.user_login, name='login'),
     url('', include('django.contrib.auth.urls', namespace='auth')),
     url('', include('social_django.urls', namespace='social')),
 

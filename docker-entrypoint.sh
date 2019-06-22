@@ -12,8 +12,8 @@ if [ $RESULT -eq 0 ]; then
     echo $(date -u) " - Running the server in branch '$branch'"
     service nginx restart
     if [ "$branch" == "dev-v2" ]; then
-        gunicorn -b 0.0.0.0:8080 tola.wsgi --reload
+        gunicorn -b 0.0.0.0:8080 hikaya.wsgi --reload
     else
-        gunicorn -b 0.0.0.0:8080 tola.wsgi
+        gunicorn -b 0.0.0.0:8080 hikaya.wsgi
     fi
 fi

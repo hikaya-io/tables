@@ -43,9 +43,9 @@ class SiloIsOwnerOrCanRead(permissions.BasePermission):
         permitted.append(obj.public)
         permitted.append(request.user.id in obj.shared.values_list('id',
                                                                    flat=True))
-        if hasattr(obj.owner, 'tola_user'):
-            permitted.append(obj.owner.tola_user.organization ==
-                             request.user.tola_user.organization)
+        if hasattr(obj.owner, 'hikaya_user'):
+            permitted.append(obj.owner.hikaya_user.organization ==
+                             request.user.hikaya_user.organization)
 
         return any(permitted)
 

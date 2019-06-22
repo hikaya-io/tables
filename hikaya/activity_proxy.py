@@ -10,11 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 def _get_headers():
-    if settings.TOLA_ACTIVITY_API_TOKEN:
+    if settings.HIKAYA_ACTIVITY_API_TOKEN:
         headers = {
             "content-type": "application/json",
             'Authorization': 'Token {}'.format(
-                settings.TOLA_ACTIVITY_API_TOKEN)
+                settings.HIKAYA_ACTIVITY_API_TOKEN)
         }
     else:
         headers = {
@@ -27,7 +27,7 @@ def get_workflowteams(**kwargs):
     headers = _get_headers()
 
     url_subpath = 'api/workflowteam/'
-    url_base = urljoin(settings.TOLA_ACTIVITY_API_URL, url_subpath)
+    url_base = urljoin(settings.HIKAYA_ACTIVITY_API_URL, url_subpath)
 
     params = ['{}={}'.format(k, v) for k, v in kwargs.iteritems()]
     query_params = '&'.join(params)
@@ -60,7 +60,7 @@ def get_by_url(url):
 def get_workflowlevel1s(user):
     try:
         params = {
-            'workflow_user__tola_user_uuid': user.tola_user.tola_user_uuid,
+            'workflow_user__hikaya_user_uuid': user.hikaya_user.hikaya_user_uuid,
             'nested_models': True
         }
         wfteams = get_workflowteams(**params)

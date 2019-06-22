@@ -14,7 +14,7 @@ class ReadListViewTest(TestCase):
         factories.Read.create_batch(4)
         self.factory = APIRequestFactory()
         self.user = factories.User(first_name='Homer', last_name='Simpson')
-        self.tola_user = factories.TolaUser(user=self.user)
+        self.hikaya_user = factories.TolaUser(user=self.user)
 
     def test_list_read_superuser(self):
         request = self.factory.get('/api/read/')
@@ -27,20 +27,20 @@ class ReadListViewTest(TestCase):
 
     def test_list_read_owner(self):
         request = self.factory.get('/api/read/')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = ReadViewSet.as_view({'get': 'list'})
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 0)
 
-        factories.Read(owner=self.tola_user.user)
+        factories.Read(owner=self.hikaya_user.user)
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
     def test_list_read_public(self):
         request = self.factory.get('/api/read/')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = ReadViewSet.as_view({'get': 'list'})
         response = view(request)
         self.assertEqual(response.status_code, 200)
@@ -56,7 +56,7 @@ class ReadListViewTest(TestCase):
 
     def test_list_read_shared(self):
         request = self.factory.get('/api/read/')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = ReadViewSet.as_view({'get': 'list'})
         response = view(request)
         self.assertEqual(response.status_code, 200)
@@ -64,7 +64,7 @@ class ReadListViewTest(TestCase):
 
         owner = factories.User()
         read = factories.Read(read_name='It is shared', owner=owner)
-        factories.Silo(shared=[self.tola_user.user], reads=[read])
+        factories.Silo(shared=[self.hikaya_user.user], reads=[read])
 
         response = view(request)
         self.assertEqual(response.status_code, 200)
@@ -75,10 +75,10 @@ class ReadRetrieveViewTest(TestCase):
     def setUp(self):
         factories.Organization(id=1)
         self.user = factories.User(first_name='Homer', last_name='Simpson')
-        self.tola_user = factories.TolaUser(user=self.user)
+        self.hikaya_user = factories.TolaUser(user=self.user)
         self.read = factories.Read(read_name="test_data",
-                                   owner=self.tola_user.user)
-        self.silo = factories.Silo(owner=self.tola_user.user,
+                                   owner=self.hikaya_user.user)
+        self.silo = factories.Silo(owner=self.hikaya_user.user,
                                    reads=[self.read])
         self.factory = APIRequestFactory()
 
@@ -100,7 +100,7 @@ class ReadRetrieveViewTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
         request = self.factory.get('/api/read/')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
 
         response = view(request, pk=self.read.id)
         self.assertEqual(response.status_code, 200)
@@ -116,7 +116,7 @@ class ReadRetrieveViewTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
         read = factories.Read(read_name='It is public',
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
         factories.Silo(public=True, reads=[read])
 
         response = view(request, pk=read.id)
@@ -133,7 +133,7 @@ class ReadRetrieveViewTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
         read = factories.Read(read_name='It is shared',
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
         factories.Silo(shared=[shared_user], reads=[read])
 
         response = view(request, pk=read.id)
@@ -144,10 +144,10 @@ class ReadRetrieveViewTest(TestCase):
 class ReadCreateViewTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
-        self.tola_user = factories.TolaUser()
+        self.hikaya_user = factories.TolaUser()
 
         self.read = factories.Read(read_name="test_data",
-                                   owner=self.tola_user.user)
+                                   owner=self.hikaya_user.user)
 
         self.read_type = factories.ReadType.create(read_type='CSV')
 
@@ -156,7 +156,7 @@ class ReadCreateViewTest(TestCase):
             "type": reverse('readtype-detail',
                             kwargs={'pk': self.read_type.id}),
             "owner": reverse('user-detail',
-                             kwargs={'pk': self.tola_user.user.id}),
+                             kwargs={'pk': self.hikaya_user.user.id}),
             "read_name": "test",
             "read_url": "",
             "autopull_frequency": "daily",
@@ -166,7 +166,7 @@ class ReadCreateViewTest(TestCase):
             }
 
         request = self.factory.post('/api/read/', data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = ReadViewSet.as_view({'post': 'create'})
         response = view(request)
 
@@ -180,7 +180,7 @@ class ReadCreateViewTest(TestCase):
                          data['autopush_frequency'])
 
         self.assertContains(response, "/api/users/"+str(
-            self.tola_user.user.id), status_code=201)
+            self.hikaya_user.user.id), status_code=201)
         self.assertContains(response, "/api/readtype/"+str(
             self.read_type.id), status_code=201)
 
@@ -191,16 +191,16 @@ class ReadCreateViewTest(TestCase):
 class ReadUpdateViewTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
-        self.tola_user = factories.TolaUser()
+        self.hikaya_user = factories.TolaUser()
 
         self.read = factories.Read(read_name="test_data",
-                                   owner=self.tola_user.user)
+                                   owner=self.hikaya_user.user)
 
         self.read_type = factories.ReadType.create(read_type='CSV')
 
     def test_update_read_super_user(self):
-        self.tola_user.user.is_superuser = True
-        self.tola_user.user.save()
+        self.hikaya_user.user.is_superuser = True
+        self.hikaya_user.user.save()
 
         another_user = factories.User(first_name='Homer', last_name='Simpson')
         silo = factories.Silo(owner=another_user, public=True)
@@ -214,13 +214,13 @@ class ReadUpdateViewTest(TestCase):
             "type": reverse('readtype-detail',
                             kwargs={'pk': self.read_type.id}),
             "owner": reverse('user-detail',
-                             kwargs={'pk': self.tola_user.user.id}),
+                             kwargs={'pk': self.hikaya_user.user.id}),
             "autopull_frequency": "weekly",
             "autopush_frequency": "weekly",
         }
 
         request = self.factory.post('/api/read/', data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = ReadViewSet.as_view({'post': 'update'})
         response = view(request, pk=new_read.pk)
 
@@ -233,7 +233,7 @@ class ReadUpdateViewTest(TestCase):
                          data['autopush_frequency'])
 
         self.assertContains(response, "/api/users/" + str(
-            self.tola_user.user.id), status_code=200)
+            self.hikaya_user.user.id), status_code=200)
         self.assertContains(response, "/api/readtype/" + str(
             self.read_type.id), status_code=200)
 
@@ -247,19 +247,19 @@ class ReadUpdateViewTest(TestCase):
         new_read = factories.Read(read_name="test_data",
                                   autopull_frequency="daily",
                                   autopush_frequency="daily",
-                                  owner=self.tola_user.user)
+                                  owner=self.hikaya_user.user)
 
         data = {
             "type": reverse('readtype-detail',
                             kwargs={'pk': self.read_type.id}),
             "owner": reverse('user-detail',
-                             kwargs={'pk': self.tola_user.user.id}),
+                             kwargs={'pk': self.hikaya_user.user.id}),
             "autopull_frequency": "weekly",
             "autopush_frequency": "weekly",
         }
 
         request = self.factory.post('/api/read/', data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = ReadViewSet.as_view({'post': 'update'})
         response = view(request, pk=new_read.pk)
 
@@ -272,7 +272,7 @@ class ReadUpdateViewTest(TestCase):
                          data['autopush_frequency'])
 
         self.assertContains(response, "/api/users/" + str(
-            self.tola_user.user.id), status_code=200)
+            self.hikaya_user.user.id), status_code=200)
         self.assertContains(response, "/api/readtype/" + str(
             self.read_type.id), status_code=200)
 
@@ -299,7 +299,7 @@ class ReadUpdateViewTest(TestCase):
         }
 
         request = self.factory.post('/api/read/', data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = ReadViewSet.as_view({'post': 'update'})
         response = view(request, pk=new_read.pk)
 

@@ -7,7 +7,7 @@ from crispy_forms.layout import Layout, Submit, Reset, Field, Hidden
 from django.core.exceptions import ValidationError
 from collections import OrderedDict
 
-from silo.models import Read, Silo, WorkflowLevel1, TolaUser
+from silo.models import Read, Silo, WorkflowLevel1, HikayaUser
 from hikaya.activity_proxy import get_workflowlevel1s
 
 
@@ -35,11 +35,11 @@ class SiloForm(forms.ModelForm):
         if user:
             wfl1_uuids = get_workflowlevel1s(user)
 
-            organization_id = TolaUser.objects.\
+            organization_id = HikayaUser.objects.\
                 values_list('organization_id', flat=True).get(user=user)
 
             user_queryset = User.objects.\
-                filter(tola_user__organization_id=organization_id)
+                filter(hikaya_user__organization_id=organization_id)
 
             self.fields['shared'].queryset = user_queryset.exclude(pk=user.pk)
             self.fields['owner'].queryset = user_queryset
@@ -69,11 +69,11 @@ class SiloForm(forms.ModelForm):
         valid = True
         if owner and shared:
             if self.user:
-                organization_id = TolaUser.objects.values_list(
+                organization_id = HikayaUser.objects.values_list(
                     'organization_id', flat=True).get(user=self.user)
                 org_users_id = User.objects.values_list(
                     'id', flat=True).filter(
-                    tola_user__organization_id=organization_id)
+                    hikaya_user__organization_id=organization_id)
 
                 valid = shared.filter(
                     ~Q(pk=owner) &

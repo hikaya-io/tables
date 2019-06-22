@@ -4,7 +4,7 @@ import sys
 from django.core.management import call_command
 from django.test import TestCase
 
-from silo.models import Country, ReadType, TolaSites
+from silo.models import Country, ReadType, HikayaSites
 
 
 class DevNull(object):
@@ -32,7 +32,7 @@ class LoadInitialDataTest(TestCase):
 
         ReadType.objects.get(read_type="ONA")
         Country.objects.get(code="AF")
-        TolaSites.objects.get(name="Track")
+        HikayaSites.objects.get(name="Track")
 
     def test_load_basic_data_two_times_no_crash(self):
         args = []
@@ -43,4 +43,4 @@ class LoadInitialDataTest(TestCase):
         # We make sure it only returns one unique object of each model
         ReadType.objects.get(read_type="ONA")
         Country.objects.get(code="AF")
-        TolaSites.objects.get(name="Track")
+        HikayaSites.objects.get(name="Track")

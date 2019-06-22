@@ -39,7 +39,7 @@ client_secrets.json
 read_types_local.json
 sites_local.json
 tags_local.json
-tolasites_local.json
+hikayasites_local.json
 
 # Misc.
 .idea/

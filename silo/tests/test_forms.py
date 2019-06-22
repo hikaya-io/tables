@@ -10,7 +10,7 @@ from silo import forms
 class SiloFormTest(TestCase):
     def setUp(self):
         self.user = factories.User()
-        self.tola_user = factories.TolaUser(user=self.user)
+        self.hikaya_user = factories.TolaUser(user=self.user)
 
     def test_form_form_fields(self):
         form_fields = ['name', 'description', 'tags', 'shared',
@@ -90,7 +90,7 @@ class SiloFormTest(TestCase):
         mock_get_workflowteams.return_value = []
         user = factories.User(first_name='Homer', last_name='Simpson')
         factories.TolaUser(
-            user=user, organization=self.tola_user.organization)
+            user=user, organization=self.hikaya_user.organization)
         silo = factories.Silo(owner=self.user)
 
         data = {
@@ -154,7 +154,7 @@ class SiloFormTest(TestCase):
         mock_get_workflowteams.return_value = []
         user = factories.User(first_name='Homer', last_name='Simpson')
         factories.TolaUser(
-            user=user, organization=self.tola_user.organization)
+            user=user, organization=self.hikaya_user.organization)
         silo = factories.Silo(owner=self.user)
 
         data = {
@@ -171,7 +171,7 @@ class SiloFormTest(TestCase):
         mock_get_workflowteams.return_value = []
         user = factories.User(first_name='Homer', last_name='Simpson')
         factories.TolaUser(
-            user=user, organization=self.tola_user.organization)
+            user=user, organization=self.hikaya_user.organization)
         silo = factories.Silo(owner=self.user)
 
         data = {
@@ -187,7 +187,7 @@ class SiloFormTest(TestCase):
         mock_get_workflowteams.return_value = []
         user = factories.User(first_name='Homer', last_name='Simpson')
         factories.TolaUser(
-            user=user, organization=self.tola_user.organization)
+            user=user, organization=self.hikaya_user.organization)
 
         another_user = factories.User(username='Another User')
         factories.TolaUser(user=another_user)
@@ -208,7 +208,7 @@ class SiloFormTest(TestCase):
         mock_get_workflowteams.return_value = []
         user = factories.User(first_name='Homer', last_name='Simpson')
         factories.TolaUser(user=user,
-                           organization=self.tola_user.organization)
+                           organization=self.hikaya_user.organization)
         another_user = factories.User(username='Another User')
         factories.TolaUser(user=another_user)
         silo = factories.Silo(owner=self.user)

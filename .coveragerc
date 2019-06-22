@@ -5,5 +5,5 @@ omit =
   */test_*
   */migrations/*
   src/*
-  tola/settings/*
-  tola/wsgi.py
+  hikaya/settings/*
+  hikaya/wsgi.py

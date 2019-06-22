@@ -23,7 +23,7 @@ from rest_framework import mixins, status
 
 from .serializers import *
 from .models import (Silo, LabelValueStore, Country, WorkflowLevel1,
-                     WorkflowLevel2, TolaUser, Read, ReadType)
+                     WorkflowLevel2, HikayaUser, Read, ReadType)
 from silo.permissions import (IsOwnerOrReadOnly, ReadIsOwnerViewOrWrite,
                           SiloIsOwnerOrCanRead)
 from hikaya.util import (getSiloColumnNames, getCompleteSiloColumnNames,
@@ -38,7 +38,7 @@ class TolaUserViewSet(viewsets.ModelViewSet):
         # Use this queryset or the django-filters lib will not work
         queryset = self.filter_queryset(self.get_queryset())
         if not request.user.is_superuser:
-            organization_id = TolaUser.objects.\
+            organization_id = HikayaUser.objects.\
                 values_list('organization_id', flat=True).\
                 get(user=request.user)
             queryset = queryset.filter(organization_id=organization_id)
@@ -53,9 +53,9 @@ class TolaUserViewSet(viewsets.ModelViewSet):
                                         context={'request': request})
         return Response(serializer.data)
 
-    filter_fields = ('organization__id', 'tola_user_uuid')
+    filter_fields = ('organization__id', 'hikaya_user_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    queryset = TolaUser.objects.all()
+    queryset = HikayaUser.objects.all()
     serializer_class = TolaUserSerializer
 
 
@@ -162,7 +162,7 @@ class CustomFormViewSet(mixins.CreateModelMixin,
         # get fields' values
         form_uuid = serializer.data['form_uuid']
         level1_uuid = serializer.data['level1_uuid']
-        tola_user_uuid = serializer.data['tola_user_uuid']
+        hikaya_user_uuid = serializer.data['hikaya_user_uuid']
         form_name = serializer.data['name']
         read_name = serializer.data['name']
         columns = serializer.data['fields']
@@ -174,15 +174,15 @@ class CustomFormViewSet(mixins.CreateModelMixin,
 
         try:
             wkflvl1 = WorkflowLevel1.objects.get(level1_uuid=level1_uuid)
-            tola_user = TolaUser.objects.get(tola_user_uuid=tola_user_uuid)
-        except (WorkflowLevel1.DoesNotExist, TolaUser.DoesNotExist) as e:
+            hikaya_user = HikayaUser.objects.get(hikaya_user_uuid=hikaya_user_uuid)
+        except (WorkflowLevel1.DoesNotExist, HikayaUser.DoesNotExist) as e:
             return Response(
                 e.message, status=status.HTTP_400_BAD_REQUEST)
 
         url_subpath = '/activity/forms/{}/view'.format(form_uuid)
         form_url = urljoin(settings.ACTIVITY_URL, url_subpath)
         read = Read.objects.create(
-            owner=tola_user.user,
+            owner=hikaya_user.user,
             type=ReadType.objects.get(read_type='CustomForm'),
             read_name=read_name,
             read_url=form_url
@@ -192,10 +192,10 @@ class CustomFormViewSet(mixins.CreateModelMixin,
         if len(table_name) > 255:
             table_name = table_name[:255]
         silo = Silo.objects.create(
-            owner=tola_user.user,
+            owner=hikaya_user.user,
             name=table_name,
             description=description,
-            organization=tola_user.organization,
+            organization=hikaya_user.organization,
             public=False,
             columns=columns,
             form_uuid=form_uuid
@@ -280,8 +280,8 @@ class CustomFormViewSet(mixins.CreateModelMixin,
 
             # if there's a submitted_by uuid, get user's name from db
             if submitted_by_uuid:
-                submitted_by = TolaUser.objects.values_list(
-                    'name', flat=True).get(tola_user_uuid=submitted_by_uuid)
+                submitted_by = HikayaUser.objects.values_list(
+                    'name', flat=True).get(hikaya_user_uuid=submitted_by_uuid)
 
             # add values to the default columns
             for default_col in self._default_columns:
@@ -337,22 +337,22 @@ class SiloViewSet(viewsets.ReadOnlyModelViewSet):
         user_uuid = self.request.GET.get('user_uuid')
         if user_uuid is not None:
             try:
-                tola_user = TolaUser.objects.get(tola_user_uuid=user_uuid)
-            except TolaUser.DoesNotExist:
+                hikaya_user = HikayaUser.objects.get(hikaya_user_uuid=user_uuid)
+            except HikayaUser.DoesNotExist:
                 return Silo.objects.filter(owner=None)
             else:
-                user = tola_user.user
+                user = hikaya_user.user
                 return Silo.objects.filter(
                     Q(owner=user) | Q(public=True) | Q(shared=user)
-                    | Q(owner__tola_user__organization=tola_user.organization))
+                    | Q(owner__hikaya_user__organization=hikaya_user.organization))
         else:
             user = self.request.user
             if user.is_superuser:
                 return Silo.objects.all()
 
             return Silo.objects.filter(Q(owner=user) | Q(public=True) |
-                                       Q(owner__tola_user__organization=\
-                                             user.tola_user.organization))
+                                       Q(owner__hikaya_user__organization=\
+                                             user.hikaya_user.organization))
 
     @detail_route()
     def data(self, request, id):

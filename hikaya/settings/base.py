@@ -46,11 +46,11 @@ MANAGERS = ADMINS
 ############ MONGO DB #####################
 MONGODB_DATABASES = {
     "default": {
-        "name": os.getenv("TOLATABLES_MONGODB_NAME"),
-        "host": os.getenv("TOLATABLES_MONGODB_HOST", '127.0.0.1'),
-        "port": int(os.getenv("TOLATABLES_MONGODB_PORT", 27017)),
-        "username": os.getenv("TOLATABLES_MONGODB_USER"),
-        "password": os.getenv("TOLATABLES_MONGODB_PASS"),
+        "name": os.getenv("HIKAYATABLES_MONGODB_NAME"),
+        "host": os.getenv("HIKAYATABLES_MONGODB_HOST", '127.0.0.1'),
+        "port": int(os.getenv("HIKAYATABLES_MONGODB_PORT", 27017)),
+        "username": os.getenv("HIKAYATABLES_MONGODB_USER"),
+        "password": os.getenv("HIKAYATABLES_MONGODB_PASS"),
     },
 }
 MONGO_URI = 'mongodb://{username}:{password}@{host}:{port}/{db}'.format(
@@ -219,8 +219,8 @@ path.insert(0, normpath(join(SITE_ROOT, 'datasources')))
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
-    'silo',
     'hikaya',
+    'silo',
 )
 DATASOURCE_APPS = (
     'fileuploadjson',
@@ -236,7 +236,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 # https://github.com/django/django/blob/master/django/contrib/auth/backends.py
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.hikaya.TolaOAuth2',
+    # 'social_core.backends.hikaya.TolaOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -249,7 +249,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
     'social_core.pipeline.social_auth.associate_by_email',
-    'hikaya.auth_pipeline.user_to_tola',
+    'hikaya.auth_pipeline.user_to_hikaya',
 )
 
 ############ END OF AUTHENTICATION BACKEND ##############
@@ -257,7 +257,7 @@ SOCIAL_AUTH_PIPELINE = (
 ########## Login redirect ###########
 LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
-LOGIN_URL = '/login/hikaya'
+LOGIN_URL = '/accounts/login'
 
 ########## LOGGING CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
@@ -308,9 +308,9 @@ LOGGING = {
 ########## END LOGGING CONFIGURATION
 
 
-####### Tola Activity API #######
-TOLA_ACTIVITY_API_URL = 'https://hikaya-activity-demo.mercycorps.org/api/'
-TOLA_ACTIVITY_API_TOKEN = 'Token xxxxxxxxxxx'
+####### H Activity API #######
+HIKAYA_ACTIVITY_API_URL = 'https://activity.hikaya.io/api/'
+HIKAYA_ACTIVITY_API_TOKEN = 'Token xxxxxxxxxxx'
 
 
 ########## REST CONFIGURATION

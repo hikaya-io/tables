@@ -18,7 +18,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         client  = pymongo.MongoClient(settings.MONGODB_URI)
-        db = client.get_database(settings.TOLATABLES_MONGODB_NAME)
+        db = client.get_database(settings.HIKAYATABLES_MONGODB_NAME)
 
         counter = 0
         found_silos = set()

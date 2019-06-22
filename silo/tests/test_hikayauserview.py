@@ -8,22 +8,22 @@ from silo.api import TolaUserViewSet
 class TolaUserListViewsTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
-        self.tola_user = factories.TolaUser()
+        self.hikaya_user = factories.TolaUser()
 
-        self.tola_user_ringo = factories.TolaUser(
+        self.hikaya_user_ringo = factories.TolaUser(
             user=factories.User(first_name='Ringo', last_name='Starr'),
-            organization=self.tola_user.organization)
-        self.tola_user_george = factories.TolaUser(
+            organization=self.hikaya_user.organization)
+        self.hikaya_user_george = factories.TolaUser(
             user=factories.User(first_name='George', last_name='Harrison'),
             organization=factories.Organization(name='Other Org'))
 
-    def test_list_tolauser_superuser(self):
-        self.tola_user.user.is_staff = True
-        self.tola_user.user.is_superuser = True
-        self.tola_user.user.save()
+    def test_list_hikayauser_superuser(self):
+        self.hikaya_user.user.is_staff = True
+        self.hikaya_user.user.is_superuser = True
+        self.hikaya_user.user.save()
 
         request = self.factory.get('')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = TolaUserViewSet.as_view({'get': 'list'})
         response = view(request)
         self.assertEqual(response.status_code, 200)
@@ -33,9 +33,9 @@ class TolaUserListViewsTest(TestCase):
                                   u'George Harrison')):
             self.assertEqual(response.data[i]['name'], name)
 
-    def test_list_tolauser_other_user(self):
+    def test_list_hikayauser_other_user(self):
         request = self.factory.get('')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = TolaUserViewSet.as_view({'get': 'list'})
         response = view(request)
         self.assertEqual(response.status_code, 200)

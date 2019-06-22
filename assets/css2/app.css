@@ -54,7 +54,7 @@ button:focus,
     width: 100%;
 }
 
-.navbar-tola {
+.navbar-hikaya {
   /* TolaTables Brand Color: */
   background-color: #0B607D;
   margin-top: 50px;
@@ -63,18 +63,18 @@ button:focus,
 
 }
 
-.navbar-tola .navbar-nav > li > a {
+.navbar-hikaya .navbar-nav > li > a {
   color: #FFFFFF;
       position: relative;
     z-index: 2;
 }
 
-.navbar-tola .navbar-nav > li > a:hover,
-.navbar-tola .navbar-nav > li > a:focus,
-.navbar-tola .navbar-nav > li.active > a,
-.navbar-tola .navbar-nav > li.active > a:hover,
-.navbar-tola .navbar-nav > li.active > a:focus,
-.navbar-tola .navbar-nav .dropdown.open a.dropdown-toggle {
+.navbar-hikaya .navbar-nav > li > a:hover,
+.navbar-hikaya .navbar-nav > li > a:focus,
+.navbar-hikaya .navbar-nav > li.active > a,
+.navbar-hikaya .navbar-nav > li.active > a:hover,
+.navbar-hikaya .navbar-nav > li.active > a:focus,
+.navbar-hikaya .navbar-nav .dropdown.open a.dropdown-toggle {
   color: #FFFFFF;
   background-color: rgba(0, 0, 0, .15);
 }

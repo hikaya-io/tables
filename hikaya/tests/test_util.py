@@ -100,9 +100,9 @@ class save_data_to_siloTest(TestCase):
     """
 
     def setUp(self):
-        self.tola_user = factories.TolaUser()
+        self.hikaya_user = factories.TolaUser()
         self.read = factories.Read(read_name='Test Read')
-        self.silo = factories.Silo(owner=self.tola_user.user,
+        self.silo = factories.Silo(owner=self.hikaya_user.user,
                                    reads=[self.read])
         logging.disable(logging.ERROR)
 
@@ -257,7 +257,7 @@ class save_data_to_siloTest(TestCase):
         mock_ona_parse_type_repeat.return_value = []
         silo = factories.Silo(name='test_ona')
         read = factories.Read(read_name='test_ona_read',
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
         silo.reads.add(read)
         data = [{
                     '_notes': [],
@@ -324,7 +324,7 @@ class save_data_to_siloTest(TestCase):
         mock_ona_parse_type_repeat.return_value = []
         silo = factories.Silo(name='test_ona')
         read = factories.Read(read_name='test_ona_read',
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
         silo.reads.add(read)
         data = [{
                     '_notes': [],

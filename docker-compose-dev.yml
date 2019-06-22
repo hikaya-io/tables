@@ -9,7 +9,7 @@ services:
       timeout: 5s
       retries: 5
     environment:
-      - POSTGRES_DB=tolatables
+      - POSTGRES_DB=tables
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
     volumes:
@@ -40,7 +40,7 @@ services:
   mongoClientTemp:
    image: mongo:3.4.10
    container_name: mongoClientTemp
-   command: mongo --host mongo --eval "db.getSiblingDB('tolatables').createUser({user:'tolatables', pwd:'tolatables', roles:[{role:'dbOwner', db:'tolatables'}]}); db.getSiblingDB('test').createUser({user:'test', pwd:'test', roles:[{role:'dbOwner', db:'test'}]});"
+   command: mongo --host mongo --eval "db.getSiblingDB('tables').createUser({user:'hikaya-tables', pwd:'hikaya_tables', roles:[{role:'dbOwner', db:'hikaya_tables'}]}); db.getSiblingDB('test').createUser({user:'test', pwd:'test', roles:[{role:'dbOwner', db:'test'}]});"
    depends_on:
     - mongo
 
@@ -60,21 +60,21 @@ services:
       - redis
     environment:
       - DJANGO_SETTINGS_MODULE=hikaya.settings.dev
-      - TOLA_DEBUG=True
-      - TOLA_HOSTNAME=127.0.0.1,localhost
-      - TOLATABLES_DB_ENGINE=django.db.backends.postgresql_psycopg2
-      - TOLATABLES_DB_NAME=tolatables
-      - TOLATABLES_DB_USER=root
-      - TOLATABLES_DB_PASS=root
-      - TOLATABLES_DB_HOST=postgres
-      - TOLATABLES_DB_PORT=5432
-      - TOLATABLES_MONGODB_NAME=tolatables
-      - TOLATABLES_MONGODB_USER=tolatables
-      - TOLATABLES_MONGODB_PASS=tolatables
-      - TOLATABLES_MONGODB_HOST=mongo
-      - TOLATABLES_MONGODB_PORT=27017
-      - TOLA_ACTIVITY_API_URL=
-      - TOLA_ACTIVITY_API_TOKEN=
+      - HIKAYA_DEBUG=True
+      - HIKAYA_HOSTNAME=127.0.0.1,localhost
+      - HIKAYATABLES_DB_ENGINE=django.db.backends.postgresql_psycopg2
+      - HIKAYATABLES_DB_NAME=hikaya_tables
+      - HIKAYATABLES_DB_USER=root
+      - HIKAYATABLES_DB_PASS=root
+      - HIKAYATABLES_DB_HOST=postgres
+      - HIKAYATABLES_DB_PORT=5432
+      - HIKAYATABLES_MONGODB_NAME=hikaya_tables
+      - HIKAYATABLES_MONGODB_USER=hikaya-tables
+      - HIKAYATABLES_MONGODB_PASS=hikaya_tables
+      - HIKAYATABLES_MONGODB_HOST=mongo
+      - HIKAYATABLES_MONGODB_PORT=27017
+      - HIKAYA_ACTIVITY_API_URL=
+      - HIKAYA_ACTIVITY_API_TOKEN=
       - GOOGLE_API_KEY=AIzaSyCnXYlzg5GBjOOk-_Mh8s36aF7OqIalyqE
       - GOOGLE_OAUTH_CLIENT_ID=1090285679254-sle9dnkig5lv0gvnvgo5bd7js2i2u9cl.apps.googleusercontent.com
       - GOOGLE_OAUTH_CLIENT_SECRET=bZ6NaORHhmAfeZ_s-s9WuLVh

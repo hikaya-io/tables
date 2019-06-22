@@ -1,4 +1,4 @@
-Tola Tables [![Build Status](https://travis-ci.org/toladata/TolaTables.svg?branch=master)](https://travis-ci.org/toladata/TolaTables) [![Coverage Status](https://coveralls.io/repos/github/toladata/TolaTables/badge.svg)](https://coveralls.io/github/toladata/TolaTables)
+Tola Tables [![Build Status](https://travis-ci.org/hikayadata/TolaTables.svg?branch=master)](https://travis-ci.org/hikayadata/TolaTables) [![Coverage Status](https://coveralls.io/repos/github/hikayadata/TolaTables/badge.svg)](https://coveralls.io/github/hikayadata/TolaTables)
 ====
 
 Share, edit and display data from various mobile data collection platforms.
@@ -17,9 +17,9 @@ combined into a single table (aka Silo).
 
 Location of settings:
 
-* Development: `tola/settings/dev.py`
-* Test runner: `tola/settings/test.py`
-* Staging/Production: `tola/settings/local.py`
+* Development: `hikaya/settings/dev.py`
+* Test runner: `hikaya/settings/test.py`
+* Staging/Production: `hikaya/settings/local.py`
 * Login Configuration: `templates/login_types.html`
 
 Settings in the local.py file can be overridden using the file local_secret.py.
@@ -74,13 +74,13 @@ docker exec -it tables bash
 To connect to the postgres database when the container is running:
 
 ```bash
-docker exec -it postgres psql -U root tolatables
+docker exec -it postgres psql -U root hikaya-tables
 ```
 
 To connect to the mongo database when the container is running:
 
 ```bash
-docker exec -it mongo mongo tolatables -u tolatables -p tolatables
+docker exec -it mongo mongo hikaya_tables -u hikaya-tables -p hikaya_tables
 ```
 
 
@@ -139,7 +139,7 @@ Some MacOS systems have trouble seeing the MySql installation.  If you are using
 
 The Linux systems is having a problem to install the Tola module of social core.  If you are using Linux, you may need to run this command in the folder where you cloned the repository.
 
-`docker cp src/social-core/social_core/backends/tola.py tables:/usr/local/lib/python2.7/site-packages/social_core/backends/`
+`docker cp src/social-core/social_core/backends/hikaya.py tables:/usr/local/lib/python2.7/site-packages/social_core/backends/`
 
 ### Set up the Database
 
@@ -155,7 +155,7 @@ Follow the [RabbitMQ installation guide](http://docs.celeryproject.org/en/latest
 
 #### Start Celery worker
 
-The Celery library should have been installed with the rest of the python packages you installed earlier.  You can start celery worker using `celery -A tola  worker -l info`. For more information check out its [documentation](http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html#using-celery-with-django).
+The Celery library should have been installed with the rest of the python packages you installed earlier.  You can start celery worker using `celery -A hikaya  worker -l info`. For more information check out its [documentation](http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html#using-celery-with-django).
 
 #### Start MongoDB
 
@@ -190,6 +190,6 @@ Do not run unit tests on a production database. Django is not set up to make a t
 ## Creating PRs and Issues
 The following templates were created to easy the way to create tickets and help the developer.
 
-- Bugs and Issues [[+]](https://github.com/toladata/TolaTables/issues/new)
-- New features [[+]](https://github.com/toladata/TolaTables/issues/new?template=new_features.md)
-- Pull requests [[+]](https://github.com/toladata/TolaTables/compare/dev-v2?expand=1)
+- Bugs and Issues [[+]](https://github.com/hikayadata/TolaTables/issues/new)
+- New features [[+]](https://github.com/hikayadata/TolaTables/issues/new?template=new_features.md)
+- Pull requests [[+]](https://github.com/hikayadata/TolaTables/compare/dev-v2?expand=1)

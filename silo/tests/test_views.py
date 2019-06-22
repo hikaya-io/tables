@@ -109,15 +109,15 @@ class IndexViewTest(TestCase):
         response = views.IndexView.as_view()(request)
         self.assertEqual(response.status_code, 302)
     """
-    @override_settings(TOLA_ACTIVITY_API_URL='https://api.toladata.io')
-    @override_settings(ACTIVITY_URL='https://toladata.io')
+    @override_settings(HIKAYA_ACTIVITY_API_URL='https://api.hikayadata.io')
+    @override_settings(ACTIVITY_URL='https://hikayadata.io')
     def test_index_get_unauthenticated(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 302)
         self.assertIn('login/hikaya', response.url)
 
-    @override_settings(TOLA_ACTIVITY_API_URL=None)
-    @override_settings(ACTIVITY_URL='https://toladata.io')
+    @override_settings(HIKAYA_ACTIVITY_API_URL=None)
+    @override_settings(ACTIVITY_URL='https://hikayadata.io')
     def test_index_get_unauthenticated_no_activity_api_url(self):
         response = self.client.get('')
         self.assertEqual(response.status_code, 302)
@@ -127,17 +127,17 @@ class IndexViewTest(TestCase):
 class ExportViewsTest(TestCase, MongoTestCase):
     def setUp(self):
         factories.ReadType(read_type='CustomForm')
-        self.tola_user = factories.TolaUser()
+        self.hikaya_user = factories.TolaUser()
         self.factory = APIRequestFactory()
 
     def test_export_csv(self):
-        self.tola_user.user.is_staff = True
-        self.tola_user.user.is_superuser = True
-        self.tola_user.user.save()
+        self.hikaya_user.user.is_staff = True
+        self.hikaya_user.user.is_superuser = True
+        self.hikaya_user.user.save()
 
         # Create the Silo to store the data
         wflvl1 = factories.WorkflowLevel1(
-            organization=self.tola_user.organization)
+            organization=self.hikaya_user.organization)
         fields = [
             {
                 'name': 'color',
@@ -153,11 +153,11 @@ class ExportViewsTest(TestCase, MongoTestCase):
             'description': 'This is a test.',
             'fields': json.dumps(fields),
             'level1_uuid': wflvl1.level1_uuid,
-            'tola_user_uuid': self.tola_user.tola_user_uuid,
+            'hikaya_user_uuid': self.hikaya_user.hikaya_user_uuid,
             'form_uuid': uuid.uuid4()
         }
         request = self.factory.post('', data=meta)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = CustomFormViewSet.as_view({'post': 'create'})
         response = view(request)
         self.assertEqual(response.status_code, 201)
@@ -181,7 +181,7 @@ class ExportViewsTest(TestCase, MongoTestCase):
 
         # Export to CSV
         request = self.factory.get('')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.export_silo(request, silo_id)
         self.assertEqual(response.status_code, 200)
         self.assertIn('color,type', response.content)
@@ -192,7 +192,7 @@ class SiloViewsTest(TestCase, MongoTestCase):
     def setUp(self):
         factories.ReadType(read_type='CustomForm')
         self.org = factories.Organization()
-        self.tola_user = factories.TolaUser(organization=self.org)
+        self.hikaya_user = factories.TolaUser(organization=self.org)
         self.factory = APIRequestFactory()
 
     def _bugfix_django_messages(self, request):
@@ -208,7 +208,7 @@ class SiloViewsTest(TestCase, MongoTestCase):
     @patch('silo.views.get_workflowlevel1s', return_value=[])
     def test_silo_template_authenticated_user(self, mock_get_workflowlevel1s):
         request = self.factory.get('', follow=True)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.list_silos(request)
         template_content = response.content
 
@@ -223,7 +223,7 @@ class SiloViewsTest(TestCase, MongoTestCase):
     @patch('silo.forms.get_workflowlevel1s')
     def test_get_edit_silo(self, mock_get_workflowlevel1s,
                            mock_get_workflowteams):
-        silo = factories.Silo(owner=self.tola_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user)
         wfl1_1 = factories.WorkflowLevel1(level1_uuid=random.randint(1, 9999),
                                           name='Workflowlevel1 1')
         wfl1_2 = factories.WorkflowLevel1(level1_uuid=random.randint(1, 9999),
@@ -243,11 +243,11 @@ class SiloViewsTest(TestCase, MongoTestCase):
         mock_get_workflowteams.return_value = wfteams
         request = self.factory.get('/silo_edit/{}/'.format(silo.id),
                                    follow=True)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.edit_silo(request, silo.id)
         template_content = response.content
 
-        match = 'selected>{}</option>'.format(self.tola_user.user.username)
+        match = 'selected>{}</option>'.format(self.hikaya_user.user.username)
         self.assertEqual(template_content.count(match), 1)
 
         # check if only the allowed programs are shown
@@ -258,32 +258,32 @@ class SiloViewsTest(TestCase, MongoTestCase):
     @patch('silo.views.get_workflowlevel1s', return_value=[])
     def test_get_edit_silo_no_teams(self, mock_get_workflowteams,
                                     mock_get_workflowlevel1s):
-        silo = factories.Silo(owner=self.tola_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user)
         wfteams = []
         mock_get_workflowteams.return_value = wfteams
         request = self.factory.get('/silo_edit/{}/'.format(silo.id),
                                    follow=True)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.edit_silo(request, silo.id)
         template_content = response.content
 
-        match = 'selected>{}</option>'.format(self.tola_user.user.username)
+        match = 'selected>{}</option>'.format(self.hikaya_user.user.username)
         self.assertEqual(template_content.count(match), 1)
 
     @patch('silo.views.get_workflowlevel1s', return_value=[])
     def test_post_edit_silo(self, mock_get_workflowlevel1s):
-        silo = factories.Silo(owner=self.tola_user.user)
-        olg_tag = factories.Tag(name='Old Tag', owner=self.tola_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user)
+        olg_tag = factories.Tag(name='Old Tag', owner=self.hikaya_user.user)
 
         data = {
             'name': 'The new silo name',
             'description': '',
-            'owner': self.tola_user.user.pk,
+            'owner': self.hikaya_user.user.pk,
             'tags': [olg_tag.id, 'New Tag'],
         }
 
         request = self.factory.post('/silo_edit/{}/'.format(silo.id), data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.edit_silo(request, silo.id)
         self.assertEqual(response.status_code, 302)
 
@@ -297,13 +297,13 @@ class SiloViewsTest(TestCase, MongoTestCase):
         self.assertIn(new_tag, silo_tags)
 
     def test_silo_edit_columns(self):
-        self.tola_user.user.is_staff = True
-        self.tola_user.user.is_superuser = True
-        self.tola_user.user.save()
+        self.hikaya_user.user.is_staff = True
+        self.hikaya_user.user.is_superuser = True
+        self.hikaya_user.user.save()
 
         columns = [{'name': 'name', 'type': 'text'}]
-        read = factories.Read(read_name='Read Test', owner=self.tola_user.user)
-        silo = factories.Silo(owner=self.tola_user.user,
+        read = factories.Read(read_name='Read Test', owner=self.hikaya_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user,
                               columns=json.dumps(columns), reads=[read])
 
         data = {
@@ -312,7 +312,7 @@ class SiloViewsTest(TestCase, MongoTestCase):
             'name': 'given_name',
         }
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         self._bugfix_django_messages(request)
         response = views.edit_columns(request, silo.id)
 
@@ -324,13 +324,13 @@ class SiloViewsTest(TestCase, MongoTestCase):
         self.assertEqual(response.url, '/silo_detail/'+str(silo.id)+'/')
 
     def test_silo_edit_columns_utf8(self):
-        self.tola_user.user.is_staff = True
-        self.tola_user.user.is_superuser = True
-        self.tola_user.user.save()
+        self.hikaya_user.user.is_staff = True
+        self.hikaya_user.user.is_superuser = True
+        self.hikaya_user.user.save()
 
         columns = [{'name': 'name', 'type': 'text'}]
-        read = factories.Read(read_name='Read Test', owner=self.tola_user.user)
-        silo = factories.Silo(owner=self.tola_user.user,
+        read = factories.Read(read_name='Read Test', owner=self.hikaya_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user,
                               columns=json.dumps(columns), reads=[read])
 
         data = {
@@ -339,7 +339,7 @@ class SiloViewsTest(TestCase, MongoTestCase):
             'name': u'ürlaub',
         }
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         self._bugfix_django_messages(request)
         response = views.edit_columns(request, silo.id)
 
@@ -351,9 +351,9 @@ class SiloViewsTest(TestCase, MongoTestCase):
         self.assertEqual(response.url, '/silo_detail/'+str(silo.id)+'/')
 
     def test_silo_edit_columns_keep_data(self):
-        self.tola_user.user.is_staff = True
-        self.tola_user.user.is_superuser = True
-        self.tola_user.user.save()
+        self.hikaya_user.user.is_staff = True
+        self.hikaya_user.user.is_superuser = True
+        self.hikaya_user.user.save()
 
         columns = [
             {
@@ -365,8 +365,8 @@ class SiloViewsTest(TestCase, MongoTestCase):
                 'type': 'text'
             }
         ]
-        read = factories.Read(read_name='Read Test', owner=self.tola_user.user)
-        silo = factories.Silo(owner=self.tola_user.user,
+        read = factories.Read(read_name='Read Test', owner=self.hikaya_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user,
                               columns=json.dumps(columns), reads=[read])
 
         # Upload data
@@ -402,7 +402,7 @@ class SiloViewsTest(TestCase, MongoTestCase):
             'type': 'art'
         }
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         self._bugfix_django_messages(request)
         views.edit_columns(request, silo.id)
 
@@ -421,9 +421,9 @@ class SiloViewsTest(TestCase, MongoTestCase):
     @patch('silo.views.db')
     def test_silo_edit_columns_delete(self, mock_db):
         mock_db.return_value = Mock()
-        self.tola_user.user.is_staff = True
-        self.tola_user.user.is_superuser = True
-        self.tola_user.user.save()
+        self.hikaya_user.user.is_staff = True
+        self.hikaya_user.user.is_superuser = True
+        self.hikaya_user.user.save()
 
         fields = [
             {
@@ -447,7 +447,7 @@ class SiloViewsTest(TestCase, MongoTestCase):
             'type': 'type'
         }
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         self._bugfix_django_messages(request)
         views.edit_columns(request, silo.id)
 
@@ -457,12 +457,12 @@ class SiloViewsTest(TestCase, MongoTestCase):
         self.assertTrue('type' in column_names)
 
     def test_silo_edit_columns_invalid_form(self):
-        self.tola_user.user.is_staff = True
-        self.tola_user.user.is_superuser = True
-        self.tola_user.user.save()
+        self.hikaya_user.user.is_staff = True
+        self.hikaya_user.user.is_superuser = True
+        self.hikaya_user.user.save()
 
         wflvl1 = factories.WorkflowLevel1(
-            organization=self.tola_user.organization)
+            organization=self.hikaya_user.organization)
         fields = [
             {
                 'name': 'color',
@@ -478,11 +478,11 @@ class SiloViewsTest(TestCase, MongoTestCase):
             'description': 'This is a test.',
             'fields': json.dumps(fields),
             'level1_uuid': wflvl1.level1_uuid,
-            'tola_user_uuid': self.tola_user.tola_user_uuid,
+            'hikaya_user_uuid': self.hikaya_user.hikaya_user_uuid,
             'form_uuid': uuid.uuid4()
         }
         request = self.factory.post('', data=meta)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = CustomFormViewSet.as_view({'post': 'create'})
         response = view(request)
         # For the tearDown
@@ -491,7 +491,7 @@ class SiloViewsTest(TestCase, MongoTestCase):
 
         data = {}
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         self._bugfix_django_messages(request)
         response = views.edit_columns(request, silo.id)
         template_content = response.content
@@ -503,12 +503,12 @@ class SiloViewsTest(TestCase, MongoTestCase):
         self.assertIn(match, template_content)
 
     def test_silo_edit_columns_fields_dont_match(self):
-        self.tola_user.user.is_staff = True
-        self.tola_user.user.is_superuser = True
-        self.tola_user.user.save()
+        self.hikaya_user.user.is_staff = True
+        self.hikaya_user.user.is_superuser = True
+        self.hikaya_user.user.save()
 
         wflvl1 = factories.WorkflowLevel1(
-            organization=self.tola_user.organization)
+            organization=self.hikaya_user.organization)
         fields = [
             {
                 'name': 'color',
@@ -524,11 +524,11 @@ class SiloViewsTest(TestCase, MongoTestCase):
             'description': 'This is a test.',
             'fields': json.dumps(fields),
             'level1_uuid': wflvl1.level1_uuid,
-            'tola_user_uuid': self.tola_user.tola_user_uuid,
+            'hikaya_user_uuid': self.hikaya_user.hikaya_user_uuid,
             'form_uuid': uuid.uuid4()
         }
         request = self.factory.post('', data=meta)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         view = CustomFormViewSet.as_view({'post': 'create'})
         response = view(request)
         # For the tearDown
@@ -540,7 +540,7 @@ class SiloViewsTest(TestCase, MongoTestCase):
             'test': 'test'
         }
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         with self.assertRaises(WriteError):
             views.edit_columns(request, silo.id)
 
@@ -548,7 +548,7 @@ class SiloViewsTest(TestCase, MongoTestCase):
 class SaveAndImportReadViewTest(TestCase):
     def setUp(self):
         self.org = factories.Organization()
-        self.tola_user = factories.TolaUser(organization=self.org)
+        self.hikaya_user = factories.TolaUser(organization=self.org)
         self.factory = APIRequestFactory()
 
     @patch('silo.views.save_data_to_silo')
@@ -558,9 +558,9 @@ class SaveAndImportReadViewTest(TestCase):
         mock_savedatasilo.return_value = Mock()
         mock_requests.get.return_value = Mock(content=json.dumps(data_res))
 
-        read = factories.Read(read_name='Read Test', owner=self.tola_user.user)
-        silo = factories.Silo(owner=self.tola_user.user, reads=[read])
-        factories.ThirdPartyTokens(user=self.tola_user.user, name='ONA')
+        read = factories.Read(read_name='Read Test', owner=self.hikaya_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user, reads=[read])
+        factories.ThirdPartyTokens(user=self.hikaya_user.user, name='ONA')
         factories.ReadType(read_type='ONA')
 
         data = {
@@ -571,7 +571,7 @@ class SaveAndImportReadViewTest(TestCase):
         }
 
         request = self.factory.post('', data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.saveAndImportRead(request)
         template_content = response.content
 
@@ -582,9 +582,9 @@ class SaveAndImportReadViewTest(TestCase):
     def test_save_and_import_read_without_data(self, mock_requests):
         mock_requests.get.return_value = Mock(content='[]')
 
-        read = factories.Read(read_name='Read Test', owner=self.tola_user.user)
-        silo = factories.Silo(owner=self.tola_user.user, reads=[read])
-        factories.ThirdPartyTokens(user=self.tola_user.user, name='ONA')
+        read = factories.Read(read_name='Read Test', owner=self.hikaya_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user, reads=[read])
+        factories.ThirdPartyTokens(user=self.hikaya_user.user, name='ONA')
         factories.ReadType(read_type='ONA')
 
         data = {
@@ -595,7 +595,7 @@ class SaveAndImportReadViewTest(TestCase):
         }
 
         request = self.factory.post('', data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.saveAndImportRead(request)
         content = response.content
 
@@ -607,9 +607,9 @@ class SaveAndImportReadViewTest(TestCase):
         data_res = {'detail': 'Success'}
         mock_requests.get.return_value = Mock(content=json.dumps(data_res))
 
-        read = factories.Read(read_name='Read Test', owner=self.tola_user.user)
-        silo = factories.Silo(owner=self.tola_user.user, reads=[read])
-        factories.ThirdPartyTokens(user=self.tola_user.user, name='ONA')
+        read = factories.Read(read_name='Read Test', owner=self.hikaya_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user, reads=[read])
+        factories.ThirdPartyTokens(user=self.hikaya_user.user, name='ONA')
         factories.ReadType(read_type='ONA')
 
         data = {
@@ -619,7 +619,7 @@ class SaveAndImportReadViewTest(TestCase):
         }
 
         request = self.factory.post('', data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.saveAndImportRead(request)
         content = response.content
 
@@ -630,9 +630,9 @@ class SaveAndImportReadViewTest(TestCase):
         data_res = {'detail': 'Success'}
         mock_requests.get.return_value = Mock(content=json.dumps(data_res))
 
-        read = factories.Read(read_name='Read Test', owner=self.tola_user.user)
-        silo = factories.Silo(owner=self.tola_user.user, reads=[read])
-        factories.ThirdPartyTokens(user=self.tola_user.user, name='ONA')
+        read = factories.Read(read_name='Read Test', owner=self.hikaya_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user, reads=[read])
+        factories.ThirdPartyTokens(user=self.hikaya_user.user, name='ONA')
         factories.ReadType(read_type='ONA')
 
         data = {
@@ -643,7 +643,7 @@ class SaveAndImportReadViewTest(TestCase):
         }
 
         request = self.factory.post('', data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.saveAndImportRead(request)
         content = response.content
 
@@ -653,7 +653,7 @@ class SaveAndImportReadViewTest(TestCase):
 class DoMergeViewTest(TestCase):
     def setUp(self):
         self.org = factories.Organization()
-        self.tola_user = factories.TolaUser(organization=self.org)
+        self.hikaya_user = factories.TolaUser(organization=self.org)
         self.factory = APIRequestFactory()
 
     @patch('silo.views.merge_two_silos')
@@ -667,13 +667,13 @@ class DoMergeViewTest(TestCase):
 
         columns = [{'name': 'name', 'type': 'text'}]
         left_read = factories.Read(read_name='Read Left',
-                                   owner=self.tola_user.user)
+                                   owner=self.hikaya_user.user)
         right_read = factories.Read(read_name='Read Right',
-                                    owner=self.tola_user.user)
-        left_silo = factories.Silo(owner=self.tola_user.user,
+                                    owner=self.hikaya_user.user)
+        left_silo = factories.Silo(owner=self.hikaya_user.user,
                                    columns=json.dumps(columns),
                                    reads=[left_read])
-        right_silo = factories.Silo(owner=self.tola_user.user,
+        right_silo = factories.Silo(owner=self.hikaya_user.user,
                                     columns=json.dumps(columns),
                                     reads=[right_read])
         merged_silo_name = '{}_{}'.format(left_silo.name, right_silo.name)
@@ -687,7 +687,7 @@ class DoMergeViewTest(TestCase):
         }
 
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.do_merge(request)
         content = json.loads(response.content)
 
@@ -712,13 +712,13 @@ class DoMergeViewTest(TestCase):
 
         columns = [{'name': 'name', 'type': 'text'}]
         left_read = factories.Read(read_name='Read Left',
-                                   owner=self.tola_user.user)
+                                   owner=self.hikaya_user.user)
         right_read = factories.Read(read_name='Read Right',
-                                    owner=self.tola_user.user)
-        left_silo = factories.Silo(owner=self.tola_user.user,
+                                    owner=self.hikaya_user.user)
+        left_silo = factories.Silo(owner=self.hikaya_user.user,
                                    columns=json.dumps(columns),
                                    reads=[left_read])
-        right_silo = factories.Silo(owner=self.tola_user.user,
+        right_silo = factories.Silo(owner=self.hikaya_user.user,
                                     columns=json.dumps(columns),
                                     reads=[right_read])
         merged_silo_name = '{}_{}'.format(left_silo.name, right_silo.name)
@@ -732,7 +732,7 @@ class DoMergeViewTest(TestCase):
         }
 
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.do_merge(request)
         content = json.loads(response.content)
 
@@ -752,13 +752,13 @@ class DoMergeViewTest(TestCase):
 
         columns = [{'name': 'name', 'type': 'text'}]
         left_read = factories.Read(read_name='Read Left',
-                                   owner=self.tola_user.user)
+                                   owner=self.hikaya_user.user)
         right_read = factories.Read(read_name='Read Right',
-                                    owner=self.tola_user.user)
-        left_silo = factories.Silo(owner=self.tola_user.user,
+                                    owner=self.hikaya_user.user)
+        left_silo = factories.Silo(owner=self.hikaya_user.user,
                                    columns=json.dumps(columns),
                                    reads=[left_read])
-        right_silo = factories.Silo(owner=self.tola_user.user,
+        right_silo = factories.Silo(owner=self.hikaya_user.user,
                                     columns=json.dumps(columns),
                                     reads=[right_read])
         merged_silo_name = '{}_{}'.format(left_silo.name, right_silo.name)
@@ -772,7 +772,7 @@ class DoMergeViewTest(TestCase):
         }
 
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.do_merge(request)
         content = json.loads(response.content)
 
@@ -781,9 +781,9 @@ class DoMergeViewTest(TestCase):
         self.assertEqual(content['status'], 'danger')
 
     def test_no_columns_passed(self):
-        read = factories.Read(read_name='Read Test', owner=self.tola_user.user)
-        left_silo = factories.Silo(owner=self.tola_user.user, reads=[read])
-        right_silo = factories.Silo(owner=self.tola_user.user, reads=[read])
+        read = factories.Read(read_name='Read Test', owner=self.hikaya_user.user)
+        left_silo = factories.Silo(owner=self.hikaya_user.user, reads=[read])
+        right_silo = factories.Silo(owner=self.hikaya_user.user, reads=[read])
         merged_silo_name = '{}_{}'.format(left_silo.name, right_silo.name)
 
         data = {
@@ -794,7 +794,7 @@ class DoMergeViewTest(TestCase):
         }
 
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.do_merge(request)
         content = json.loads(response.content)
 
@@ -804,8 +804,8 @@ class DoMergeViewTest(TestCase):
         self.assertEqual(content['message'], 'No columns data passed')
 
     def test_cannot_find_tables(self):
-        read = factories.Read(read_name='Read Test', owner=self.tola_user.user)
-        silo = factories.Silo(owner=self.tola_user.user, reads=[read])
+        read = factories.Read(read_name='Read Test', owner=self.hikaya_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user, reads=[read])
 
         # Do not find the left table
         data = {
@@ -815,7 +815,7 @@ class DoMergeViewTest(TestCase):
         }
 
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.do_merge(request)
         content = json.loads(response.content)
 
@@ -831,7 +831,7 @@ class DoMergeViewTest(TestCase):
         }
 
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.do_merge(request)
         content = json.loads(response.content)
 
@@ -850,13 +850,13 @@ class DoMergeViewTest(TestCase):
 
         columns = [{'name': 'name', 'type': 'text'}]
         left_read = factories.Read(read_name='Read Left',
-                                   owner=self.tola_user.user)
+                                   owner=self.hikaya_user.user)
         right_read = factories.Read(read_name='Read Right',
-                                    owner=self.tola_user.user)
-        left_silo = factories.Silo(owner=self.tola_user.user,
+                                    owner=self.hikaya_user.user)
+        left_silo = factories.Silo(owner=self.hikaya_user.user,
                                    columns=json.dumps(columns),
                                    reads=[left_read])
-        right_silo = factories.Silo(owner=self.tola_user.user,
+        right_silo = factories.Silo(owner=self.hikaya_user.user,
                                     columns=json.dumps(columns),
                                     reads=[right_read])
         merged_silo_name = 'Merging of {} and {}'.format(
@@ -871,7 +871,7 @@ class DoMergeViewTest(TestCase):
         }
 
         request = self.factory.post('', data=data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.do_merge(request)
         content = json.loads(response.content)
 
@@ -890,7 +890,7 @@ class OneDriveViewsTest(TestCase):
 
     def setUp(self):
         self.org = factories.Organization()
-        self.tola_user = factories.TolaUser(organization=self.org)
+        self.hikaya_user = factories.TolaUser(organization=self.org)
         self.user = factories.User()
         factories.ReadType.create_batch(7)
 
@@ -941,14 +941,14 @@ class OneDriveReadTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.factory = RequestFactory()
-        self.tola_user = factories.TolaUser()
+        self.hikaya_user = factories.TolaUser()
         factories.ReadType.create_batch(7)
 
     def test_new_read_post(self):
         read_type = ReadType.objects.get(read_type="OneDrive")
 
         params = {
-            'owner': self.tola_user.user.pk,
+            'owner': self.hikaya_user.user.pk,
             'type': read_type.pk,
             'read_name': 'TEST READ ONEDRIVE',
             'description': 'TEST DESCRIPTION for test read source',
@@ -957,7 +957,7 @@ class OneDriveReadTest(TestCase):
             'create_date': '2018-01-26 12:33:00',
         }
         request = self.factory.post(self.new_read_url, data=params)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
 
         response = views.showRead(request, 0)
 
@@ -966,7 +966,7 @@ class OneDriveReadTest(TestCase):
 
         # check for social auth updated
 
-        social_auth = UserSocialAuth.objects.get(user=self.tola_user.user,
+        social_auth = UserSocialAuth.objects.get(user=self.hikaya_user.user,
                                                  provider='microsoft-graph')
         self.assertEqual(social_auth.extra_data['access_token'],
                          'TEST_DUMMY_TOKEN')
@@ -974,13 +974,13 @@ class OneDriveReadTest(TestCase):
     def test_new_read_post_existing_token(self):
         read_type = ReadType.objects.get(read_type="OneDrive")
 
-        factories.UserSocialAuth(user=self.tola_user.user,
+        factories.UserSocialAuth(user=self.hikaya_user.user,
                                  provider='microsoft-graph',
                                  extra_data={"token_type": "Bearer",
                                              "access_token": "OLD_TOKEN"})
 
         params = {
-            'owner': self.tola_user.user.pk,
+            'owner': self.hikaya_user.user.pk,
             'type': read_type.pk,
             'read_name': 'TEST READ ONEDRIVE',
             'description': 'TEST DESCRIPTION for test read source',
@@ -989,7 +989,7 @@ class OneDriveReadTest(TestCase):
             'create_date': '2018-01-26 12:33:00',
         }
         request = self.factory.post(self.new_read_url, data=params)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
 
         response = views.showRead(request, 0)
 
@@ -998,7 +998,7 @@ class OneDriveReadTest(TestCase):
 
         # check for social auth updated
 
-        social_auth = UserSocialAuth.objects.get(user=self.tola_user.user,
+        social_auth = UserSocialAuth.objects.get(user=self.hikaya_user.user,
                                                  provider='microsoft-graph')
         self.assertEqual(social_auth.extra_data['access_token'],
                          'TEST_DUMMY_TOKEN_CHANGED')
@@ -1007,7 +1007,7 @@ class OneDriveReadTest(TestCase):
         read_type = ReadType.objects.get(read_type="OneDrive")
 
         params = {
-            'owner': self.tola_user.user.pk,
+            'owner': self.hikaya_user.user.pk,
             'type': read_type.pk,
             'read_name': 'TEST READ ONEDRIVE',
             'description': 'TEST DESCRIPTION for test read source',
@@ -1015,7 +1015,7 @@ class OneDriveReadTest(TestCase):
             'create_date': '2018-01-26 12:33:00',
         }
         request = self.factory.post(self.new_read_url, data=params)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         request.session = 'session'
         message_storage = FallbackStorage(request)
         request._messages = message_storage
@@ -1031,7 +1031,7 @@ class OneDriveReadTest(TestCase):
         read_type = ReadType.objects.get(read_type="OneDrive")
 
         params = {
-            'owner': self.tola_user.user.pk,
+            'owner': self.hikaya_user.user.pk,
             'type': read_type.pk,
             'read_name': 'TEST READ ONEDRIVE',
             'description': 'TEST DESCRIPTION for test read source',
@@ -1039,7 +1039,7 @@ class OneDriveReadTest(TestCase):
             'create_date': '2018-01-26 12:33:00',
         }
         request = self.factory.post(self.new_read_url, data=params)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         request.session = 'session'
         message_storage = FallbackStorage(request)
         request._messages = message_storage
@@ -1055,7 +1055,7 @@ class SiloDetailViewTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.user = factories.User()
-        self.tola_user = factories.TolaUser(user=self.user)
+        self.hikaya_user = factories.TolaUser(user=self.user)
 
     def test_silo_detail_view(self):
         read = factories.Read(read_name="test_data",
@@ -1189,13 +1189,13 @@ class SiloDetailViewTest(TestCase):
 
     def test_silo_detail_share_with_organization(self):
         request_user = factories.User(username='Another User')
-        organization = self.tola_user.organization
+        organization = self.hikaya_user.organization
         factories.TolaUser(user=request_user, organization=organization)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
-        silo = factories.Silo(owner=self.tola_user.user,
+        silo = factories.Silo(owner=self.hikaya_user.user,
                               reads=[read],
                               public=False,
                               shared=[],
@@ -1212,12 +1212,12 @@ class SiloDetailViewTest(TestCase):
     def test_silo_detail_not_share_with_organization(self):
         request_user = factories.User(username='Another User')
         factories.TolaUser(user=request_user,
-                           organization=self.tola_user.organization)
+                           organization=self.hikaya_user.organization)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
-        silo = factories.Silo(owner=self.tola_user.user,
+        silo = factories.Silo(owner=self.hikaya_user.user,
                               reads=[read],
                               public=False,
                               shared=[],
@@ -1243,10 +1243,10 @@ class SiloDetailViewTest(TestCase):
         factories.TolaUser(user=request_user)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               reads=[read],
                               public=False,
                               shared=[],
@@ -1279,7 +1279,7 @@ class SiloDetailViewTest(TestCase):
         factories.TolaUser(user=request_user)
 
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               workflowlevel1=[wfl1_1],
                               shared=[],
                               share_with_organization=False)
@@ -1302,7 +1302,7 @@ class SiloDetailViewTest(TestCase):
         user_wf1s = [wfl1_1.level1_uuid]
         factories.TolaUser(user=request_user)
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               workflowlevel1=[],
                               shared=[],
                               share_with_organization=False)
@@ -1325,10 +1325,10 @@ class SiloDetailViewTest(TestCase):
     def test_silo_detail_change_publicty_owner(self):
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               reads=[read],
                               public=False,
                               shared=[],
@@ -1346,10 +1346,10 @@ class SiloDetailViewTest(TestCase):
         request_user = factories.User(username='Another User')
         factories.TolaUser(user=request_user)
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               reads=[read],
                               public=False,
                               shared=[],
@@ -1368,18 +1368,18 @@ class SiloListViewTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.user = factories.User()
-        self.tola_user = factories.TolaUser(user=self.user)
+        self.hikaya_user = factories.TolaUser(user=self.user)
 
     def test_list_silos_share_with_users_organization(self):
         request_user = factories.User(username='Another User')
         factories.TolaUser(user=request_user,
-                           organization=self.tola_user.organization)
+                           organization=self.hikaya_user.organization)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         factories.Silo(name='Test Share Silo',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        reads=[read],
                        public=False,
                        shared=[],
@@ -1396,10 +1396,10 @@ class SiloListViewTest(TestCase):
         factories.TolaUser(user=request_user)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         factories.Silo(name='Test Share Silo',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        reads=[read],
                        public=False,
                        shared=[],
@@ -1413,13 +1413,13 @@ class SiloListViewTest(TestCase):
     def test_list_silos_not_share_with_organization(self):
         request_user = factories.User(username='Another User')
         factories.TolaUser(user=request_user,
-                           organization=self.tola_user.organization)
+                           organization=self.hikaya_user.organization)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         factories.Silo(name='Test Share Silo',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        reads=[read],
                        public=False,
                        shared=[],
@@ -1434,10 +1434,10 @@ class SiloListViewTest(TestCase):
     def test_list_silos_with_owner_user(self):
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         factories.Silo(name='Test Share Silo',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        reads=[read],
                        public=False,
                        shared=[],
@@ -1453,10 +1453,10 @@ class SiloListViewTest(TestCase):
 
         request_user = factories.User(username='Another User')
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         factories.Silo(name='Test Share Silo',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        reads=[read],
                        public=False,
                        shared=[request_user],
@@ -1473,10 +1473,10 @@ class SiloListViewTest(TestCase):
         factories.TolaUser(user=request_user)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         factories.Silo(name='Test Share Silo',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        reads=[read],
                        public=True,
                        shared=[],
@@ -1490,17 +1490,17 @@ class SiloListViewTest(TestCase):
 
     def test_list_silos_share_with_owner(self):
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               reads=[read],
                               public=False,
-                              shared=[self.tola_user.user],
+                              shared=[self.hikaya_user.user],
                               share_with_organization=False)
 
         request = self.factory.get('')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.list_silos(request)
         match = '<a href="/silo_edit/%s">Test Share Silo</a>' % silo.pk
         self.assertEqual(response.status_code, 200)
@@ -1508,17 +1508,17 @@ class SiloListViewTest(TestCase):
 
     def test_list_silos_share_with_owner_organization(self):
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               reads=[read],
                               public=False,
                               shared=[],
                               share_with_organization=True)
 
         request = self.factory.get('')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.list_silos(request)
         match = '<a href="/silo_edit/%s">Test Share Silo</a>' % silo.pk
         self.assertEqual(response.status_code, 200)
@@ -1535,7 +1535,7 @@ class SiloListViewTest(TestCase):
         factories.TolaUser(user=request_user)
 
         factories.Silo(name='Test Share Silo',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        workflowlevel1=[wfl1_1],
                        shared=[],
                        share_with_organization=False)
@@ -1557,7 +1557,7 @@ class SiloListViewTest(TestCase):
         user_wf1s = [wfl1_1.level1_uuid]
         factories.TolaUser(user=request_user)
         factories.Silo(name='Test Share Silo',
-                       owner=self.tola_user.user,
+                       owner=self.hikaya_user.user,
                        workflowlevel1=[],
                        shared=[],
                        share_with_organization=False)
@@ -1571,7 +1571,7 @@ class SiloListViewTest(TestCase):
     @override_settings(APP_BRANCH='demo')
     def test_list_silo_inlinemanual_tour_in_demo(self):
         request = self.factory.get('')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.list_silos(request)
         match = 'https://inlinemanual.com/embed/' \
                 'player.3c86e010f5c79d355223b63b3ec541ea.js'
@@ -1581,7 +1581,7 @@ class SiloListViewTest(TestCase):
     @override_settings(APP_BRANCH=MASTER_BRANCH)
     def test_list_silo_inlinemanual_tour_in_master(self):
         request = self.factory.get('')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.list_silos(request)
         match = 'https://inlinemanual.com/embed/' \
                 'player.3c86e010f5c79d355223b63b3ec541ea.js'
@@ -1593,7 +1593,7 @@ class SiloEditViewTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.user = factories.User()
-        self.tola_user = factories.TolaUser(user=self.user)
+        self.hikaya_user = factories.TolaUser(user=self.user)
 
     @patch('hikaya.activity_proxy.get_workflowteams')
     def test_silo_edit_page_with_unauthorized_user(self,
@@ -1603,10 +1603,10 @@ class SiloEditViewTest(TestCase):
         factories.TolaUser(user=request_user, organization=organization)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               reads=[read],
                               public=False,
                               shared=[],
@@ -1621,17 +1621,17 @@ class SiloEditViewTest(TestCase):
     def test_silo_edit_page_with_owner(self, mock_get_workflowteams):
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               reads=[read],
                               public=False,
                               shared=[],
                               share_with_organization=False)
 
         request = self.factory.get('')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.edit_silo(request, silo.pk)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Test Share Silo')
@@ -1642,10 +1642,10 @@ class SiloEditViewTest(TestCase):
         factories.TolaUser(user=request_user)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               reads=[read],
                               public=False,
                               shared=[request_user],
@@ -1663,13 +1663,13 @@ class SiloEditViewTest(TestCase):
 
         request_user = factories.User(username='Another User')
         factories.TolaUser(user=request_user,
-                           organization=self.tola_user.organization)
+                           organization=self.hikaya_user.organization)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               reads=[read],
                               public=False,
                               shared=[],
@@ -1686,13 +1686,13 @@ class SiloEditViewTest(TestCase):
 
         request_user = factories.User(username='Another User')
         factories.TolaUser(user=request_user,
-                           organization=self.tola_user.organization)
+                           organization=self.hikaya_user.organization)
 
         read = factories.Read(read_name="test_data",
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               reads=[read],
                               public=True,
                               shared=[],
@@ -1707,17 +1707,17 @@ class SiloEditViewTest(TestCase):
     @patch('hikaya.activity_proxy.get_workflowteams')
     def test_share_silo_with_owner_failed_for_owner(
             self, mock_get_workflowteams):
-        silo = factories.Silo(owner=self.tola_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user)
 
         data = {
             'name': 'The new silo name 2',
             'description': '',
-            'owner': self.tola_user.user.pk,
-            'shared': self.tola_user.user.pk
+            'owner': self.hikaya_user.user.pk,
+            'shared': self.hikaya_user.user.pk
         }
 
         request = self.factory.post('/silo_edit/{}/'.format(silo.id), data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         request._dont_enforce_csrf_checks = True
         request.session = 'session'
         message_storage = FallbackStorage(request)
@@ -1737,14 +1737,14 @@ class SiloEditViewTest(TestCase):
         request_user = factories.User(username='Another User')
         factories.TolaUser(user=request_user)
 
-        silo = factories.Silo(owner=self.tola_user.user,
+        silo = factories.Silo(owner=self.hikaya_user.user,
                               shared=[request_user])
 
         data = {
             'name': 'The new silo name 2',
             'description': '',
-            'owner': self.tola_user.user.pk,
-            'shared': self.tola_user.user.pk,
+            'owner': self.hikaya_user.user.pk,
+            'shared': self.hikaya_user.user.pk,
         }
 
         request = self.factory.post('/silo_edit/{}/'.format(silo.id), data)
@@ -1764,16 +1764,16 @@ class SiloEditViewTest(TestCase):
     @patch('hikaya.activity_proxy.get_workflowteams')
     def test_share_silo_without_owner_failed_for_user(
             self, mock_get_workflowteams):
-        silo = factories.Silo(owner=self.tola_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user)
 
         data = {
             'name': 'The new silo name 2',
             'description': '',
-            'shared': self.tola_user.user.pk
+            'shared': self.hikaya_user.user.pk
         }
 
         request = self.factory.post('/silo_edit/{}/'.format(silo.id), data)
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         request._dont_enforce_csrf_checks = True
         request.session = 'session'
         message_storage = FallbackStorage(request)
@@ -1809,7 +1809,7 @@ class SiloEditViewTest(TestCase):
         factories.TolaUser(user=request_user)
 
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               workflowlevel1=[wfl1_1],
                               shared=[],
                               share_with_organization=False)
@@ -1830,7 +1830,7 @@ class SiloEditViewTest(TestCase):
         mock_get_workflowlevel1s.return_value = [wfl1_1.level1_uuid]
         factories.TolaUser(user=request_user)
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               workflowlevel1=[],
                               shared=[],
                               share_with_organization=False)
@@ -1846,12 +1846,12 @@ class SiloEditViewTest(TestCase):
 
         mock_get_workflowlevel1s.return_value = []
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               workflowlevel1=[],
                               share_with_organization=False)
 
         request = self.factory.get('')
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         response = views.edit_silo(request, silo.pk)
         template_content = response.content
 
@@ -1868,7 +1868,7 @@ class SiloEditViewTest(TestCase):
         mock_get_workflowlevel1s.return_value = [wfl1_1.level1_uuid]
         factories.TolaUser(user=request_user)
         silo = factories.Silo(name='Test Share Silo',
-                              owner=self.tola_user.user,
+                              owner=self.hikaya_user.user,
                               workflowlevel1=[],
                               shared=[request_user],
                               share_with_organization=False)
@@ -1885,10 +1885,10 @@ class SiloEditViewTest(TestCase):
     def test_post_edit_silo_success_change_owner(self,
                                                  mock_get_workflowlevel1s):
 
-        silo = factories.Silo(owner=self.tola_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user)
         request_user = factories.User(username='Another User')
         factories.TolaUser(user=request_user,
-                           organization=self.tola_user.organization)
+                           organization=self.hikaya_user.organization)
 
         data = {
             'name': 'The new silo name',
@@ -1899,7 +1899,7 @@ class SiloEditViewTest(TestCase):
 
         request = self.factory.post('/silo_edit/{}/'.format(silo.id), data)
         # request.user same with owner
-        request.user = self.tola_user.user
+        request.user = self.hikaya_user.user
         request._dont_enforce_csrf_checks = True
         response = views.edit_silo(request, silo.pk)
         self.assertEqual(response.status_code, 302)
@@ -1911,10 +1911,10 @@ class SiloEditViewTest(TestCase):
     def test_post_edit_silo_fail_change_owner(self,
                                               mock_get_workflowlevel1s):
 
-        silo = factories.Silo(owner=self.tola_user.user)
+        silo = factories.Silo(owner=self.hikaya_user.user)
         request_user = factories.User(username='Another User')
         factories.TolaUser(user=request_user,
-                           organization=self.tola_user.organization)
+                           organization=self.hikaya_user.organization)
 
         data = {
             'name': 'The new silo name',
@@ -1939,13 +1939,13 @@ class PublicSiloViewTest(TestCase):
         self.factory = APIRequestFactory()
         self.organizaton = factories.Organization()
         self.user = factories.User(username='Test User')
-        self.tola_user = factories.TolaUser(user=self.user)
+        self.hikaya_user = factories.TolaUser(user=self.user)
 
     def test_public_silo_view_with_private_silo(self):
         silo = factories.Silo(name='test',
                               public=False,
                               organization=self.organizaton,
-                              owner=self.tola_user.user)
+                              owner=self.hikaya_user.user)
 
         request = self.factory.get(
             '/api/public_tables/{}/data'.format(silo.pk))

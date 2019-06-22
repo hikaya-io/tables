@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
     def _create_site(self):
         Site.objects.get_or_create(name='Track API',
-                                   domain='track.toladata.io')
+                                   domain='track.hikayadata.io')
 
         factories.TolaSites(name='Track', site=get_current_site(None))
 
