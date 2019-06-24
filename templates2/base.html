@@ -112,7 +112,7 @@
           <ul class="nav navbar-nav">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-                >Import Data<b class="caret"></b
+                >Import Data <i class="fa fa-angle-down"></i></b
               ></a>
               <ul class="dropdown-menu">
                 <li>
@@ -160,8 +160,8 @@
             </li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-                >Help<b class="caret"></b
-              ></a>
+                >Help <i class="fa fa-angle-down"></i>
+              </a>
               <ul class="dropdown-menu">
                 <li>
                   <a href="http://hikaya.work/documentation" target="blank"
@@ -178,7 +178,7 @@
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
+            <li class="dropdown dropdown-bubble" id="user-initial">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 {% if "demo" in request.build_absolute_uri %}
                 <span class="label label-danger">DEMO SERVER</span>
@@ -189,18 +189,18 @@
                 {% elif "report" in request.build_absolute_uri %}
                 <span class="label label-info">REPORT SERVER</span>
                 {% endif %}
-                <span class="glyphicon glyphicon-user"></span>
-                {{ user.hikaya_user.name }} <b class="caret"></b>
+                {{ user.hikaya_user.name | make_list | first }}
               </a>
               <ul class="dropdown-menu">
                 <li>
-                  <a href="{% url 'logout' %}"
-                    ><span class="glyphicon glyphicon-lock"></span> Logout</a
-                  >
+                <a href="{% url 'profile' %}"
+                    >Profile</a
+                >
                 </li>
+                <li class="divider"></li>
                 <li>
-                  <a href="{% url 'profile' %}"
-                    ><span class="glyphicon glyphicon-user"></span> Profile</a
+                  <a href="{% url 'logout' %}" class="text-danger"
+                    >Logout</a
                   >
                 </li>
               </ul>
