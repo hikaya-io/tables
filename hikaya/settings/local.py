@@ -22,8 +22,8 @@ try:
         'default': {
             'ENGINE': os.getenv('HIKAYATABLES_DB_ENGINE', 'django.db.backends.postgresql'),
             'NAME': os.getenv('HIKAYATABLES_DB_NAME', 'hikaya_tables'),
-            'USER': os.getenv('HIKAYATABLES_DB_USER', 'hikaya'),
-            'PASSWORD': os.getenv('HIKAYATABLES_DB_PASS', 'activitydb'),
+            'USER': os.getenv('HIKAYATABLES_DB_USER', 'postgres'),
+            'PASSWORD': os.getenv('HIKAYATABLES_DB_PASS', 'hot/leo/1244/06'),
             'HOST': os.getenv('HIKAYATABLES_DB_HOST', 'localhost'),
             'PORT': os.getenv('HIKAYATABLES_DB_PORT', 5432),
         }
