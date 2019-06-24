@@ -1,19 +1,20 @@
-{% extends "base.html" %}
-
-{% block title %}Account Profile{% endblock %}
-
+{% extends "base.html" %} {% block title %}Account Profile{% endblock %} 
 {% if messages %}
 <ul class="messages">
-    <p>Message:</p>
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
+  <p>Message:</p>
+  {% for message in messages %}
+  <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+    {{ message }}
+  </li>
+  {% endfor %}
 </ul>
-{% endif %}
 
-{% block content %}
-	<h3>User Registration/Profile</h3>
-    {% load crispy_forms_tags %}
-    {% crispy form form.helper %}
+{% endif %} {% block content %}
 
-{% endblock content %}
+<div class="sub-navigation">
+  <div class="sub-navigation-header">
+    <h4 class="page-title">User Profile</h4>
+  </div>
+</div>
+
+{% load crispy_forms_tags %} {% crispy form form.helper %} {% endblock content %}

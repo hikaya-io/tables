@@ -243,6 +243,10 @@ body>.container {
     float: right;
 }
 
+.panel-title>img, .page-title>img {
+    max-height: 35px;
+}
+
 
 /* Start by setting display:none to make this hidden.
    Then we position it in relation to the viewport window
