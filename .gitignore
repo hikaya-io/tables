@@ -46,10 +46,12 @@ hikayasites_local.json
 .DS_Store
 .history/
 .idea
+local.py
 media/
 *.crt
 *.key
 error.log
+*.secret
 *.secret
 *.secret.yml
 src/
