@@ -38,7 +38,7 @@
               Table Source(s)
             </th>
             <th
-              class="tableOpsCol"
+              class="tableOpsCol text-right"
               data-step="3"
               data-intro="These are the things you could do to a table."
               style="width:130px;"
@@ -46,14 +46,14 @@
               Table Operations
             </th>
             <th
-              class="tableShareCol"
+              class="tableShareCol text-right"
               data-step="4"
               data-intro="Export the data out to multiple destinations"
             >
               Export
             </th>
             <th
-              class="tablePublicCol"
+              class="tablePublicCol text-right"
               data-step="5"
               data-intro="Let everyone see this table!"
             >
@@ -101,7 +101,7 @@
               <br />
               {% endfor %} {% endif %}
             </td>
-            <td class="tableOpsCol">
+            <td class="tableOpsCol text-right">
               <div class="btn-group" role="group">
                 <a
                   href="/silo_detail/{{ silo.id }}/"
@@ -115,12 +115,13 @@
                   href="/silo_delete/{{ silo.id }}/"
                   class="btn btn-del btn-xs btn-danger"
                   title="Are you sure you want to delete this table? All of the data stored in this table will also be deleted."
-                  ><span class="glyphicon glyphicon-trash" title="Delete"></span
+                  ><i class="fa fa-trash-o" title="Delete"></i
                 ></a>
               </div>
             </td>
-            <td class="tableShareCol">
-              <div style="width: 100%; " class="input-group-btn">
+            <td class="text-right">
+                <!-- removing class input-group-btn until we have 2 or more btns -->
+              <div class="">
                 <a
                   href="/export_silo_form/{{ silo.id }}/"
                   class="btn btn-xs btn-default"
@@ -139,7 +140,7 @@
               <!-- /btn-group -->
               <!-- <div id="silo_id" style="display: none;"> {{ silo.id }} </div> -->
             </td>
-            <td class="tablePublicCol">
+            <td class="tablePublicCol text-right">
               <a
                 href="#"
                 id="id_public-{{ silo.id }}"
