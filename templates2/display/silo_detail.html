@@ -1,22 +1,28 @@
-{% extends "base.html" %} {% load render_table from django_tables2 %} {% block
-page_title %}
-<h2>I amhere </h2>
-<center>
-  <a href="/silo_edit/{{ silo.id }}">{{ silo.name }}</a> <br /><small
+{% extends "base.html" %} {% load render_table from django_tables2 %} 
+
+<div class="sub-navigation">
+    <div class="sub-navigation-header">
+        <h4 class="page-title">{{silo.name}}</h4>
+    </div>
+</div>
+<div class="text-center">
+    <a href="/silo_edit/{{ silo.id }}">{{ silo.name }}</a> <br /><small
     ><p>{{ silo.description | default: '' }}</p></small
-  >
-</center>
+    >
+</div>
+
 {% endblock %} {% block content %} {% if silo.merged_silo_mappings %}
-<center>
-  Merged from
-  <a href="{% url 'silo_detail' silo.merged_silo_mappings.from_silo.pk %}">{{
-    silo.merged_silo_mappings.from_silo
-  }}</a>
-  and
-  <a href="{% url 'silo_detail' silo.merged_silo_mappings.to_silo.pk %}">{{
-    silo.merged_silo_mappings.to_silo
-  }}</a>
-</center>
+
+<div class="text-center">
+    Merged from
+    <a href="{% url 'silo_detail' silo.merged_silo_mappings.from_silo.pk %}">{{
+      silo.merged_silo_mappings.from_silo
+    }}</a>
+    and
+    <a href="{% url 'silo_detail' silo.merged_silo_mappings.to_silo.pk %}">{{
+      silo.merged_silo_mappings.to_silo
+    }}</a>
+</div>
 {% endif %}
 
 <hr />
