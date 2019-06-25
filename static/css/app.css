@@ -243,7 +243,8 @@ body>.container {
     float: right;
 }
 
-.panel-title>img, .page-title>img {
+.panel-title>img,
+.page-title>img {
     max-height: 35px;
 }
 
@@ -621,6 +622,10 @@ input[type=number]::-webkit-outer-spin-button {
     margin-bottom: 3px;
 }
 
+.mt-10 {
+    margin-top: 10px;
+}
+
 .pagination>.active>a {
     background-color: #25ced1;
     border-color: #25ced1;
@@ -671,4 +676,32 @@ input[type=number]::-webkit-outer-spin-button {
 
 .table>tbody>tr>td {
     vertical-align: middle;
+}
+
+
+.list-pointer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: normal;
+    padding: 0px;
+}
+
+.list-pointer>li {
+    list-style: none;
+    padding: 0px;
+    height: 36px;
+    background: gray;
+    display: flex;
+    align-items: center;
+    padding: 0px 12px;
+    border-radius: 4px;
+    margin-right: 16px;
+    margin-bottom: 10px;
+}
+
+.list-pointer>li>a {
+    width: max-content;
+    color: white;
+    text-decoration: none;
+    display: block;
 }

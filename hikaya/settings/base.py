@@ -46,11 +46,11 @@ MANAGERS = ADMINS
 ############ MONGO DB #####################
 MONGODB_DATABASES = {
     "default": {
-        "name": os.getenv("HIKAYATABLES_MONGODB_NAME"),
+        "name": os.getenv("HIKAYATABLES_MONGODB_NAME", 'hikayaDB'),
         "host": os.getenv("HIKAYATABLES_MONGODB_HOST", '127.0.0.1'),
         "port": int(os.getenv("HIKAYATABLES_MONGODB_PORT", 27017)),
-        "username": os.getenv("HIKAYATABLES_MONGODB_USER"),
-        "password": os.getenv("HIKAYATABLES_MONGODB_PASS"),
+        "username": os.getenv("HIKAYATABLES_MONGODB_USER", 'hegemony'),
+        "password": os.getenv("HIKAYATABLES_MONGODB_PASS", "Hegemony1244#!"),
     },
 }
 MONGO_URI = 'mongodb://{username}:{password}@{host}:{port}/{db}'.format(

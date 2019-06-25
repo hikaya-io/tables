@@ -1,5 +1,4 @@
-{% extends "base.html" %}
-{% block extra_js_in_header %}
+{% extends "base.html" %} {% block extra_js_in_header %}
 <script
   type="text/javascript"
   src="https://js.live.net/v7.2/OneDrive.js"
@@ -21,12 +20,12 @@
     OneDrive.open(odOptions);
   }
 </script>
-{% endblock %} {% block content %} 
+{% endblock %} {% block content %}
 
 <div class="sub-navigation">
-    <div class="sub-navigation-header">
-        <h4 class="page-title">Data Source</h4>
-    </div>
+  <div class="sub-navigation-header">
+    <h4 class="page-title">Data Source</h4>
+  </div>
 </div>
 
 {% if 'onedrive_file' in form.fields %}
@@ -43,14 +42,24 @@
 <input type="hidden" name="read_id" value="{{ read_id }}" />
 
 {% if get_tables %}
-<h3>Tables using this source</h3>
-<ul>
-  {% for item in get_tables %}
-  <li>
-    <a href="/silo_detail/{{ item.id }}">{{ item.name }}</a>
-  </li>
-  {% endfor %}
-</ul>
+
+
+<div class="panel panel-info mt-10">
+    <div class="panel-heading">
+        <h3 class="panel-title">Tables using this source</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="list-pointer">
+          {% for item in get_tables %}
+          <li>
+            <a href="/silo_detail/{{ item.id }}">{{ item.name }}</a>
+          </li>
+          {% endfor %}
+        </ul>
+    </div>
+</div>
+
 {% endif %} {% endblock content %} {% block extra_js_in_body %}
 <script type="text/javascript">
   'use strict';
