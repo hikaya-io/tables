@@ -1,9 +1,17 @@
 {% extends "base.html" %}
-{% block page_title %}Tables{% endblock %}
-
 
 {% block content %}
-    <p> Drag and drop elements to establish a column order </p>
+
+<div class="sub-navigation">
+  <div class="sub-navigation-header">
+    <h4 class="page-title">Edit Column Header</h4>
+  </div>
+</div>
+
+<div class="alert alert-info">
+  <p><i class="fa fa-info-circle"></i> Drag and drop elements to establish a column order </p>
+</div>
+
     <form action="/edit_column_order/{{silo.id}}/" method="post">{% csrf_token %}
       <br><br>
       <table id="listcolumns" class="table table-bordered table-hover table-striped">

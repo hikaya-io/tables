@@ -62,17 +62,19 @@ class IndexView(LoginRequiredMixin, View):
     def _get_context_data(self, request):
         # Because of the M2M 'tags' field we can't make it more performant
         # selecting just the values we want.
-        silos_user = list(Silo.objects.prefetch_related('tags', 'shared').\
-            filter(owner=request.user))
+        silos_user = list(Silo.objects.prefetch_related('tags', 'shared').
+                          filter(owner=request.user))
         silos_user_public_total = len([s for s in silos_user if s.public])
-        silos_user_shared_total = len([s for s in silos_user if s.shared.all()])
+        silos_user_shared_total = len(
+            [s for s in silos_user if s.shared.all()])
         silos_public = Silo.objects.prefetch_related('tags').filter(public=1).\
             exclude(owner=request.user)
         readtypes = ReadType.objects.all().values_list('read_type', flat=True)
         # tags = Tag.objects.filter(owner=request.user).\
         #            annotate(times_tagged=Count('silos')).\
         #            values('name', 'times_tagged').order_by('-times_tagged')[:8]
-        site_name = HikayaSites.objects.values_list('name', flat=True).get(site_id=1)
+        site_name = HikayaSites.objects.values_list(
+            'name', flat=True).get(site_id=1)
 
         context = {
             'silos_user': silos_user,
@@ -121,15 +123,18 @@ def merge_two_silos(mapping_data, lsid, rsid, msid):
     # Loop through the mapped cols and add them to the list of merged_cols
     for k, v in mappings.iteritems():
         col_name = v['right_table_col']
-        if col_name == "silo_id" or col_name == "create_date": continue
+        if col_name == "silo_id" or col_name == "create_date":
+            continue
         if col_name not in merged_cols:
             merged_cols.append(col_name)
 
     for lef_col in l_unmapped_cols:
-        if lef_col not in merged_cols: merged_cols.append(lef_col)
+        if lef_col not in merged_cols:
+            merged_cols.append(lef_col)
 
     for right_col in r_unampped_cols:
-        if right_col not in merged_cols: merged_cols.append(right_col)
+        if right_col not in merged_cols:
+            merged_cols.append(right_col)
 
     # retrieve the left silo
     try:
@@ -173,7 +178,8 @@ def merge_two_silos(mapping_data, lsid, rsid, msid):
     # make sure that the unique_fields from right table are in the merged_table
     # by adding them to the merged_cols array.
     for uf in r_unique_fields:
-        if uf.name not in merged_cols: merged_cols.append(uf.name)
+        if uf.name not in merged_cols:
+            merged_cols.append(uf.name)
 
         # make sure to set the same unique_fields in the merged_table
         if not m_unique_fields.filter(name=uf.name).exists():
@@ -187,7 +193,8 @@ def merge_two_silos(mapping_data, lsid, rsid, msid):
         for k in row:
             # Skip over those columns in the right table that
             # shouldn't be in the merged_table
-            if k not in merged_cols: continue
+            if k not in merged_cols:
+                continue
             merged_row[k] = row[k]
 
         # now set its silo_id to the merged_table id
@@ -251,7 +258,7 @@ def merge_two_silos(mapping_data, lsid, rsid, msid):
                                 mapped_value = float(row[col])
                             else:
                                 mapped_value = float(mapped_value) \
-                                               + float(row[col])
+                                    + float(row[col])
                         except Exception as e:
                             msg = 'Failed to apply %s to column, %s : %s '\
                                   % (merge_type, col, e.message)
@@ -267,7 +274,8 @@ def merge_two_silos(mapping_data, lsid, rsid, msid):
             #  in the right table.
             else:
                 col = str(left_cols[0])
-                if col == "silo_id": continue
+                if col == "silo_id":
+                    continue
                 try:
                     mapped_value = row[col]
                 except KeyError as e:
@@ -335,15 +343,18 @@ def appendTwoSilos(mapping_data, lsid, rsid, msid):
     # Loop through the mapped cols and add them to the list of merged_cols
     for k, v in mappings.iteritems():
         col_name = v['right_table_col']
-        if col_name == "silo_id" or col_name == "create_date": continue
+        if col_name == "silo_id" or col_name == "create_date":
+            continue
         if col_name not in merged_cols:
             merged_cols.append(col_name)
 
     for lef_col in l_unmapped_cols:
-        if lef_col not in merged_cols: merged_cols.append(lef_col)
+        if lef_col not in merged_cols:
+            merged_cols.append(lef_col)
 
     for right_col in r_unampped_cols:
-        if right_col not in merged_cols: merged_cols.append(right_col)
+        if right_col not in merged_cols:
+            merged_cols.append(right_col)
 
     # retrieve the left silo
     try:
@@ -371,7 +382,6 @@ def appendTwoSilos(mapping_data, lsid, rsid, msid):
         logger.error(msg)
         return {'status': "danger",  'message': msg}
 
-
     # Delete Any existing data from the merged_table
     deleted_res = db.label_value_store.delete_many({"silo_id": msid})
 
@@ -380,14 +390,14 @@ def appendTwoSilos(mapping_data, lsid, rsid, msid):
         merged_row = OrderedDict()
         for k in row:
             # Skip over those columns in the right table that sholdn't be in the merged_table
-            if k not in merged_cols: continue
+            if k not in merged_cols:
+                continue
             merged_row[k] = row[k]
 
         # now set its silo_id to the merged_table id
         merged_row["silo_id"] = msid
         merged_row["create_date"] = timezone.now()
         db.label_value_store.insert_one(merged_row)
-
 
     # now loop through left table and apply the mapping
     for row in l_silo_data:
@@ -407,9 +417,11 @@ def appendTwoSilos(mapping_data, lsid, rsid, msid):
                             if mapped_value == '':
                                 mapped_value = float(row[col])
                             else:
-                                mapped_value = float(mapped_value) + float(row[col])
+                                mapped_value = float(
+                                    mapped_value) + float(row[col])
                         except Exception as e:
-                            msg = 'Failed to apply %s to column, %s : %s ' % (merge_type, col, e.message)
+                            msg = 'Failed to apply %s to column, %s : %s ' % (
+                                merge_type, col, e.message)
                             logger.error(msg)
                             return {'status': "danger",  'message': msg}
                     else:
@@ -421,7 +433,8 @@ def appendTwoSilos(mapping_data, lsid, rsid, msid):
             # only one col in left table is mapped to one col in the right table.
             else:
                 col = str(left_cols[0])
-                if col == "silo_id": continue
+                if col == "silo_id":
+                    continue
                 try:
                     mapped_value = row[col]
                 except KeyError as e:
@@ -430,7 +443,7 @@ def appendTwoSilos(mapping_data, lsid, rsid, msid):
                     # we might get a KeyError so in that case we just skip it.
                     continue
 
-            #right_col is used as in index of merged_row because one or more left cols map to one col in right table
+            # right_col is used as in index of merged_row because one or more left cols map to one col in right table
             merged_row[right_col] = mapped_value
 
         # Get data from left unmapped columns:
@@ -624,7 +637,7 @@ def getOnaForms(request):
 
     if ona_token and auth_success:
         header = {
-                'Authorization': 'Token {}'.format(ona_token.token)
+            'Authorization': 'Token {}'.format(ona_token.token)
         }
         onaforms = requests.get(url_user_forms, headers=header)
         data = json.loads(onaforms.content)
@@ -655,7 +668,7 @@ def getOnaForms(request):
 
 
 @login_required
-def providerLogout(request,provider):
+def providerLogout(request, provider):
 
     ona_token = ThirdPartyTokens.objects.get(user=request.user, name=provider)
     ona_token.delete()
@@ -667,35 +680,37 @@ def providerLogout(request,provider):
 # DELETE-SILO
 @csrf_protect
 def deleteSilo(request, id):
-    owner = Silo.objects.get(id = id).owner
+    owner = Silo.objects.get(id=id).owner
 
     if str(owner.username) == str(request.user):
         try:
             silo_to_be_deleted = Silo.objects.get(pk=id)
             silo_name = silo_to_be_deleted.name
-            DeletedSilos.objects.get_or_create(user=request.user,\
-                                            deleted_time=timezone.now(),\
-                                            silo_name_id=silo_name+" with id "+id,\
-                                            silo_description=silo_to_be_deleted.description)
+            DeletedSilos.objects.get_or_create(user=request.user,
+                                               deleted_time=timezone.now(),
+                                               silo_name_id=silo_name+" with id "+id,
+                                               silo_description=silo_to_be_deleted.description)
             lvs = LabelValueStore.objects(silo_id=silo_to_be_deleted.id)
             num_rows_deleted = lvs.delete()
 
-            #look through each of the reads and delete them if this was their only silo
+            # look through each of the reads and delete them if this was their only silo
             reads = silo_to_be_deleted.reads.all()
             for read in reads:
                 if Silo.objects.filter(reads__pk=read.id).count() == 1:
                     read.delete()
 
             silo_to_be_deleted.delete()
-            messages.success(request, "Silo, %s, with all of its %s rows of data deleted successfully." % (silo_name, num_rows_deleted))
+            messages.success(request, "Silo, %s, with all of its %s rows of data deleted successfully." % (
+                silo_name, num_rows_deleted))
 
         except Silo.DoesNotExist as e:
             print(e)
-        #except Exception as es:
-            #print(es)
+        # except Exception as es:
+            # print(es)
         return HttpResponseRedirect("/silos")
     else:
-        messages.error(request, "You do not have permission to delete this silo")
+        messages.error(
+            request, "You do not have permission to delete this silo")
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
@@ -776,10 +791,10 @@ def showRead(request, id):
                 read.password = None
             if form.instance.autopull_frequency:
                 read.autopull_expiration = datetime.datetime.now() + \
-                                           datetime.timedelta(days=170)
+                    datetime.timedelta(days=170)
             if form.instance.autopush_frequency:
                 read.autopush_expiration = datetime.datetime.now() + \
-                                           datetime.timedelta(days=170)
+                    datetime.timedelta(days=170)
 
             read.save()
             if form.instance.type.read_type == "CSV":
@@ -789,10 +804,10 @@ def showRead(request, id):
                                             "?read_id=%s" % read.id)
             if form.instance.type.read_type == "OneDrive":
                 extra_data = {"token_type": "Bearer", "access_token":
-                    form.cleaned_data["onedrive_access_token"]}
+                              form.cleaned_data["onedrive_access_token"]}
 
                 social_auth, created = UserSocialAuth.objects.get_or_create(
-                        provider='microsoft-graph', user=request.user)
+                    provider='microsoft-graph', user=request.user)
                 social_auth.extra_data = extra_data
                 social_auth.save()
 
@@ -892,17 +907,17 @@ def uploadFile(request, id):
                             public=False, create_date=timezone.now())
                 silo.save()
             else:
-                silo = Silo.objects.get(id = request.POST["silo_id"])
+                silo = Silo.objects.get(id=request.POST["silo_id"])
 
             silo.reads.add(read_obj)
             silo_id = silo.id
 
             task = CeleryTask.objects.create(task_id=None,
-                              task_status=None,
-                              content_object=read_obj)
+                                             task_status=None,
+                                             content_object=read_obj)
 
             async_res = process_silo.apply_async(
-                        (silo.id, read_obj.id)
+                (silo.id, read_obj.id)
             )
 
             task.task_id = async_res.id
@@ -911,7 +926,8 @@ def uploadFile(request, id):
 
             return HttpResponseRedirect('/silo_detail/' + str(silo_id) + '/')
         else:
-            messages.error(request, "There was a problem with reading the contents of your file" + form.errors)
+            messages.error(
+                request, "There was a problem with reading the contents of your file" + form.errors)
 
     user = User.objects.get(username__exact=request.user)
     # get all of the silo info to pass to the form
@@ -932,12 +948,13 @@ def getJSON(request):
     """
     if request.method == 'POST':
         # retrieve submitted Feed info from database
-        read_obj = Read.objects.get(id = request.POST.get("read_id", None))
+        read_obj = Read.objects.get(id=request.POST.get("read_id", None))
         remote_user = request.POST.get("user_name", None)
         password = request.POST.get("password", None)
         silo_id = request.POST.get("silo_id", None)
         silo_name = request.POST.get("new_silo", None)
-        result = importJSON(read_obj, request.user, remote_user, password, silo_id, silo_name)
+        result = importJSON(read_obj, request.user,
+                            remote_user, password, silo_id, silo_name)
         silo_id = str(result[2])
         if result[0] == "error":
             messages.error(request, result[1])
@@ -990,7 +1007,7 @@ def list_silos(request):
     return render(request,
                   'display/silos.html',
                   {
-                      'own_silos':own_silos,
+                      'own_silos': own_silos,
                       "shared_silos": shared_silos,
                       "public_silos": public_silos
                   })
@@ -1029,13 +1046,14 @@ def updateEntireColumn(request):
     new_val = request.POST.get("new_val", None)
     if silo_id and colname and new_val:
         db.label_value_store.update_many(
-                {"silo_id": silo_id},
-                    {
-                    "$set": {colname: new_val},
-                    },
-                False
-            )
-        messages.success(request, "Successfully, changed the %s column value to %s" % (colname, new_val))
+            {"silo_id": silo_id},
+            {
+                "$set": {colname: new_val},
+            },
+            False
+        )
+        messages.success(
+            request, "Successfully, changed the %s column value to %s" % (colname, new_val))
 
     return HttpResponseRedirect(reverse_lazy('silo_detail', kwargs={'silo_id': silo_id}))
 
@@ -1122,12 +1140,13 @@ def updateSiloData(request, pk):
     try:
         silo = Silo.objects.get(pk=pk)
     except Silo.DoesNotExist as e:
-        messages.error(request,"Table with id=%s does not exist." % pk)
+        messages.error(request, "Table with id=%s does not exist." % pk)
 
     if silo:
         try:
-            merged_silo_mapping = MergedSilosFieldMapping.objects.get(merged_silo = silo.pk)
-            #if the data table is merged then updating means trying to remerge to get updated data
+            merged_silo_mapping = MergedSilosFieldMapping.objects.get(
+                merged_silo=silo.pk)
+            # if the data table is merged then updating means trying to remerge to get updated data
             left_table_id = merged_silo_mapping.from_silo.pk
             right_table_id = merged_silo_mapping.to_silo.pk
             merge_table_id = merged_silo_mapping.merged_silo.pk
@@ -1135,23 +1154,25 @@ def updateSiloData(request, pk):
             mergeType = merged_silo_mapping.merge_type
 
             if mergeType == "merge":
-                res = merge_two_silos(mapping, left_table_id, right_table_id, merge_table_id)
+                res = merge_two_silos(
+                    mapping, left_table_id, right_table_id, merge_table_id)
             else:
-                res = appendTwoSilos(mapping, left_table_id, right_table_id, merge_table_id)
+                res = appendTwoSilos(mapping, left_table_id,
+                                     right_table_id, merge_table_id)
             if res['status'] == "success":
                 messages.success(request, res['message'])
             else:
                 messages.error(request, res['message'])
         except MergedSilosFieldMapping.DoesNotExist as e:
-            #get a list of reads from the silo
+            # get a list of reads from the silo
             reads = silo.reads.all()
-            data = [[],[]]
+            data = [[], []]
             msgs = []
             sources_to_delete = []
 
-            #Get data from each of the reads and store it as the appropriate array
+            # Get data from each of the reads and store it as the appropriate array
             for read in reads:
-                import_response = importDataFromRead(request,silo,read)
+                import_response = importDataFromRead(request, silo, read)
                 if import_response[2]:
                     msgs.append(import_response[2])
                 if import_response[1] == 1:
@@ -1159,105 +1180,125 @@ def updateSiloData(request, pk):
                     data[0].append(read)
                     sources_to_delete.append(read.id)
 
-
-            #from ones where we got data delete those records
+            # from ones where we got data delete those records
             unique_field_exist = silo.unique_fields.exists()
-            #Unique field means keep the data and update as necessary (which is already implimented so its not necessary to delete anything)
-            if  unique_field_exist == False:
-                lvs = LabelValueStore.objects(silo_id=silo.pk,__raw__={"read_id" : { "$exists" : "true", "$in" : sources_to_delete }})
+            # Unique field means keep the data and update as necessary (which is already implimented so its not necessary to delete anything)
+            if unique_field_exist == False:
+                lvs = LabelValueStore.objects(silo_id=silo.pk, __raw__={"read_id": {
+                                              "$exists": "true", "$in": sources_to_delete}})
                 lvs.delete()
 
-            #put in the new records
-            for x in range(0,len(data[0])):
+            # put in the new records
+            for x in range(0, len(data[0])):
                 for entry in data[1][x]:
-                    save_data_to_silo(silo,entry,data[0][x],request.user)
+                    save_data_to_silo(silo, entry, data[0][x], request.user)
             for read in reads:
                 if read.type.read_type == "GSheet Import":
-                    greturn = import_from_gsheet_helper(request.user, silo.id, None, read.resource_id, None, True)
+                    greturn = import_from_gsheet_helper(
+                        request.user, silo.id, None, read.resource_id, None, True)
                     if type(greturn) == tuple:
-                        greturn[1][:] = [d for d in greturn[1] if d.get('silo_id') == None]
+                        greturn[1][:] = [d for d in greturn[1]
+                                         if d.get('silo_id') == None]
                         for ret in greturn[1]:
-                            msgs.append((ret.get('level'),ret.get('msg')))
-                        #delete data associated with old read if there's no unique column
+                            msgs.append((ret.get('level'), ret.get('msg')))
+                        # delete data associated with old read if there's no unique column
                         if unique_field_exist == False:
-                            lvss_to_delete = LabelValueStore.objects(silo_id=silo.pk,__raw__={"read_id" : { "$exists" : "true", "$in" : [read.id] }})
+                            lvss_to_delete = LabelValueStore.objects(
+                                silo_id=silo.pk, __raw__={"read_id": {"$exists": "true", "$in": [read.id]}})
                             lvss_to_delete.delete()
-                        #read the data
+                        # read the data
                         for lvs in greturn[0]:
                             lvs.save()
                     else:
-                        greturn[:] = [d for d in greturn if d.get('silo_id') == None]
+                        greturn[:] = [
+                            d for d in greturn if d.get('silo_id') == None]
                         for ret in greturn:
                             if ret.get('level') == messages.SUCCESS:
-                                msgs.append((ret.get('level'),"Google spreadsheet has been successfully updated"))
+                                msgs.append(
+                                    (ret.get('level'), "Google spreadsheet has been successfully updated"))
                             else:
-                                msgs.append((ret.get('level'),ret.get('msg')))
+                                msgs.append((ret.get('level'), ret.get('msg')))
             for msg in msgs:
                 messages.add_message(request, msg[0], msg[1])
 
-            #delete legacy objects
-            lvss = LabelValueStore.objects(silo_id=silo.pk,__raw__={ "$or" : [{"read_id" : {"$not" : { "$exists" : "true" }}}, {"read_id" : {"$in" : [-1,""]} } ]})
+            # delete legacy objects
+            lvss = LabelValueStore.objects(silo_id=silo.pk, __raw__={"$or": [
+                                           {"read_id": {"$not": {"$exists": "true"}}}, {"read_id": {"$in": [-1, ""]}}]})
 
     return HttpResponseRedirect(reverse_lazy('silo_detail', kwargs={'silo_id': pk},))
 
 
-#return tuple: (list of list of dictionaries[[{}]] data, 0=falure 1=success 2=N/A, messages)
+# return tuple: (list of list of dictionaries[[{}]] data, 0=falure 1=success 2=N/A, messages)
 def importDataFromRead(request, silo, read):
     if read.type.read_type == "ONA":
-        ona_token = ThirdPartyTokens.objects.get(user=silo.owner.pk, name="ONA")
-        response = requests.get(read.read_url, headers={'Authorization': 'Token %s' % ona_token.token})
+        ona_token = ThirdPartyTokens.objects.get(
+            user=silo.owner.pk, name="ONA")
+        response = requests.get(read.read_url, headers={
+                                'Authorization': 'Token %s' % ona_token.token})
         data = json.loads(response.content)
         return ([data], 1, (messages.SUCCESS, "ONA has been successfully updated"))
     elif read.type.read_type == "CSV":
-        return (None,2,(messages.INFO, "When updating data in a table, its CSV source is ignored."))
+        return (None, 2, (messages.INFO, "When updating data in a table, its CSV source is ignored."))
     elif read.type.read_type == "JSON":
         if read.read_url != "":
-            data = importJSON(read, request.user, None, None, silo.pk, None, True)
+            data = importJSON(read, request.user, None,
+                              None, silo.pk, None, True)
             #messages.add_message(request, result[0], result[1])
             if data:
-                return ([data],1,(messages.SUCCESS, "Your JSON feed has been successfully updated"))
-            return (None,0,(messages.ERROR, "Their was an error with updating yoru JSON feed data"))
+                return ([data], 1, (messages.SUCCESS, "Your JSON feed has been successfully updated"))
+            return (None, 0, (messages.ERROR, "Their was an error with updating yoru JSON feed data"))
         else:
-            return (None,2,(messages.INFO, "When updating data in a table, its JSON file data is ignored."))
+            return (None, 2, (messages.INFO, "When updating data in a table, its JSON file data is ignored."))
     elif read.type.read_type == "GSheet Import":
-        #as the google sheet import already performs the update functionality so when its time to input the data again google spreadsheet update will be called
-        return (None,2,None)
+        # as the google sheet import already performs the update functionality so when its time to input the data again google spreadsheet update will be called
+        return (None, 2, None)
     elif read.type.read_type == "Google Spreadsheet":
-        #as the google sheet import already performs the update functionality so when its time to input the data again google spreadsheet update will be called
-        return (None,2,None)
+        # as the google sheet import already performs the update functionality so when its time to input the data again google spreadsheet update will be called
+        return (None, 2, None)
     elif read.type.read_type == "CommCare":
         commcare_token = None
         try:
-            commcare_token = ThirdPartyTokens.objects.get(user=silo.owner.pk, name="CommCare")
+            commcare_token = ThirdPartyTokens.objects.get(
+                user=silo.owner.pk, name="CommCare")
         except Exception as e:
-            return (None,0,(messages.ERROR, "You need to login to commcare using an API Key to access this functionality"))
+            return (None, 0, (messages.ERROR, "You need to login to commcare using an API Key to access this functionality"))
         last_data_retrieved = str(getNewestDataDate(silo.id))[:10]
-        url = "/".join(read.read_url.split("/")[:8]) + "?date_modified_start=" + last_data_retrieved + "&" + "limit="
-        response = requests.get(url+ str(1), headers={'Authorization': 'ApiKey %(u)s:%(a)s' % {'u' : commcare_token.username, 'a' : commcare_token.token}})
+        url = "/".join(read.read_url.split("/")
+                       [:8]) + "?date_modified_start=" + last_data_retrieved + "&" + "limit="
+        response = requests.get(url + str(1), headers={'Authorization': 'ApiKey %(u)s:%(a)s' % {
+                                'u': commcare_token.username, 'a': commcare_token.token}})
         if response.status_code == 401:
             commcare_token.delete()
-            return (None,0,(messages.ERROR, "Your Commcare usernmane or API Key is incorrect"))
+            return (None, 0, (messages.ERROR, "Your Commcare usernmane or API Key is incorrect"))
         elif response.status_code != 200:
-            return (None,0,(messages.ERROR, "An error importing from commcare has occured: %s %s " % (response.status_code, response.text)))
+            return (None, 0, (messages.ERROR, "An error importing from commcare has occured: %s %s " % (response.status_code, response.text)))
         metadata = json.loads(response.content)
         if metadata['meta']['total_count'] == 0:
             return (None, 2, (messages.SUCCESS, "Your commcare data was already up to date"))
-        #Now call the update data function in commcare tasks
-        auth = {'Authorization': 'ApiKey %(u)s:%(a)s' % {'u' : commcare_token.username, 'a' : commcare_token.token}}
+        # Now call the update data function in commcare tasks
+        auth = {'Authorization': 'ApiKey %(u)s:%(a)s' % {
+            'u': commcare_token.username, 'a': commcare_token.token}}
         url += "50"
-        data_raw = fetchCommCareData(url, auth, True, 0, metadata['meta']['total_count'], 50, silo.id, read.id, True)
+        data_raw = fetchCommCareData(
+            url, auth, True, 0, metadata['meta']['total_count'], 50, silo.id, read.id, True)
         data_collects = data_raw.apply_async()
         data_retrieval = [v.get() for v in data_collects]
         columns = set()
         for data in data_retrieval:
             columns = columns.union(data)
-        #correct the columns
-        try: columns.remove("")
-        except KeyError as e: pass
-        try: columns.remove("silo_id")
-        except KeyError as e: pass
-        try: columns.remove("read_id")
-        except KeyError as e: pass
+        # correct the columns
+        try:
+            columns.remove("")
+        except KeyError as e:
+            pass
+        try:
+            columns.remove("silo_id")
+        except KeyError as e:
+            pass
+        try:
+            columns.remove("read_id")
+        except KeyError as e:
+            pass
         for column in columns:
             if "." in column:
                 columns.remove(column)
@@ -1268,33 +1309,37 @@ def importDataFromRead(request, silo, read):
         try:
             columns.remove("id")
             columns.add("user_assigned_id")
-        except KeyError as e: pass
+        except KeyError as e:
+            pass
         try:
             columns.remove("_id")
             columns.add("user_assigned_id")
-        except KeyError as e: pass
+        except KeyError as e:
+            pass
         try:
             columns.remove("edit_date")
             columns.add("editted_date")
-        except KeyError as e: pass
+        except KeyError as e:
+            pass
         try:
             columns.remove("create_date")
             columns.add("created_date")
-        except KeyError as e: pass
-        #now mass update all the data in the database
+        except KeyError as e:
+            pass
+        # now mass update all the data in the database
 
         columns = list(columns)
         addColsToSilo(silo, columns)
         hideSiloColumns(silo, columns)
 
-        return (None,2,(messages.SUCCESS, "%i commcare records were successfully updated" % metadata['meta']['total_count']))
+        return (None, 2, (messages.SUCCESS, "%i commcare records were successfully updated" % metadata['meta']['total_count']))
     else:
-        return (None,0,(messages.ERROR,"%s does not support update data functionality. You will have to reinport the data manually" % read.type.read_type))
+        return (None, 0, (messages.ERROR, "%s does not support update data functionality. You will have to reinport the data manually" % read.type.read_type))
 
 
-#Add a new column on to a silo
+# Add a new column on to a silo
 @login_required
-def newColumn(request,id):
+def newColumn(request, id):
     """
     FORM TO CREATE A NEW COLUMN FOR A SILO
     """
@@ -1306,22 +1351,23 @@ def newColumn(request,id):
         if form.is_valid():  # All validation rules pass
             label = form.cleaned_data['new_column_name']
             value = form.cleaned_data['default_value']
-            #insert a new column into the existing silo
+            # insert a new column into the existing silo
             addColsToSilo(silo, [label])
             db.label_value_store.update_many(
                 {"silo_id": silo.id},
-                    {
+                {
                     "$set": {label: value},
-                    },
+                },
                 False
             )
-            messages.info(request, 'Your column has been added', fail_silently=False)
+            messages.info(request, 'Your column has been added',
+                          fail_silently=False)
         else:
-            messages.error(request, 'There was a problem adding your column', fail_silently=False)
+            messages.error(
+                request, 'There was a problem adding your column', fail_silently=False)
             #print form.errors
 
-
-    return render(request, "silo/new-column-form.html", {'silo':silo,'form': form})
+    return render(request, "silo/new-column-form.html", {'silo': silo, 'form': form})
 
 
 # Add a new column on to a silo
@@ -1394,22 +1440,21 @@ def edit_columns(request, id):
                   {'silo': silo, 'form': form})
 
 
-#Delete a column from a table silo
+# Delete a column from a table silo
 @login_required
-def deleteColumn(request,id,column):
+def deleteColumn(request, id, column):
     """
     DELETE A COLUMN FROM A SILO
     """
     silo = Silo.objects.get(id=id)
     deleteSiloColumns(silo, [column])
 
-
-    #delete a column from the existing table silo
+    # delete a column from the existing table silo
     db.label_value_store.update_many(
         {"silo_id": silo.id},
-            {
+        {
             "$unset": {column: ""},
-            },
+        },
         False
     )
 
@@ -1419,15 +1464,17 @@ def deleteColumn(request,id,column):
 
 # SHOW-MERGE FORM
 @login_required
-def mergeForm(request,id):
+def mergeForm(request, id):
     """
     Merge different silos using a multistep column mapping form
     """
     getSource = Silo.objects.get(id=id)
     getSourceTo = Silo.objects.filter(owner=request.user)
-    return render(request, "display/merge-form.html", {'getSource':getSource,'getSourceTo':getSourceTo})
+    return render(request, "display/merge-form.html", {'getSource': getSource, 'getSourceTo': getSourceTo})
 
 # SHOW COLUMNS FOR MERGE FORM
+
+
 def mergeColumns(request):
     """
     Step 2 in Merge different silos, map columns
@@ -1438,7 +1485,7 @@ def mergeColumns(request):
     getSourceFrom = getSiloColumnNames(from_silo_id)
     getSourceTo = getSiloColumnNames(to_silo_id)
 
-    return render(request, "display/merge-column-form.html", {'getSourceFrom':getSourceFrom, 'getSourceTo':getSourceTo, 'from_silo_id':from_silo_id, 'to_silo_id':to_silo_id})
+    return render(request, "display/merge-column-form.html", {'getSourceFrom': getSourceFrom, 'getSourceTo': getSourceTo, 'from_silo_id': from_silo_id, 'to_silo_id': to_silo_id})
 
 
 def do_merge(request):
@@ -1483,7 +1530,7 @@ def do_merge(request):
 
     if merge_type == 'merge':
         res = merge_two_silos(data, left_table_id,
-                            right_table_id, merge_table_id)
+                              right_table_id, merge_table_id)
     else:
         res = appendTwoSilos(
             data, left_table_id, right_table_id, merge_table_id
@@ -1504,7 +1551,7 @@ def do_merge(request):
 
 # EDIT A SINGLE VALUE STORE
 @login_required
-def valueEdit(request,id):
+def valueEdit(request, id):
     """
     Edit a value
     """
@@ -1525,10 +1572,12 @@ def valueEdit(request,id):
                 silo_id = v
             elif k == "edit_date":
                 if item['edit_date']:
-                    edit_date = datetime.datetime.fromtimestamp(item['edit_date']['$date']/1000)
+                    edit_date = datetime.datetime.fromtimestamp(
+                        item['edit_date']['$date']/1000)
                     data[k] = edit_date.strftime('%Y-%m-%d %H:%M:%S')
             elif k == "create_date":
-                create_date = datetime.datetime.fromtimestamp(item['create_date']['$date']/1000)
+                create_date = datetime.datetime.fromtimestamp(
+                    item['create_date']['$date']/1000)
                 data[k] = create_date.strftime('%Y-%m-%d')
             else:
                 data[k] = v
@@ -1537,8 +1586,9 @@ def valueEdit(request,id):
         for col in cols:
             if col['name'] not in keys:
                 data[col['name']] = None
-    if request.method == 'POST': # If the form has been submitted...
-        form = MongoEditForm(request.POST or None, extra = data, silo_pk=silo_id) # A form bound to the POST data
+    if request.method == 'POST':  # If the form has been submitted...
+        # A form bound to the POST data
+        form = MongoEditForm(request.POST or None, extra=data, silo_pk=silo_id)
         if form.is_valid():
             lvs = LabelValueStore.objects(id=id)[0]
             for lbl, val in form.cleaned_data.iteritems():
@@ -1555,35 +1605,40 @@ def valueEdit(request,id):
                     try:
                         for col in columns_to_calculate_from:
                             numbers.append(int(lvs[col]))
-                        setattr(lvs,column.column_name,calculation_to_do(numbers))
+                        setattr(lvs, column.column_name,
+                                calculation_to_do(numbers))
                     except ValueError as operation:
-                        setattr(lvs,column.column_name,calculation_to_do("Error"))
+                        setattr(lvs, column.column_name,
+                                calculation_to_do("Error"))
             except Exception as e:
-                messages.warning(request, "Data format error prevented hikaya tables from applying formula column to your data")
+                messages.warning(
+                    request, "Data format error prevented hikaya tables from applying formula column to your data")
             lvs.save()
             return HttpResponseRedirect('/silo_detail/' + str(silo_id))
         else:
             print "not valid"
     else:
-        form = MongoEditForm(initial={'silo_id': silo_id, 'id': id}, extra=data, silo_pk=silo_id)
+        form = MongoEditForm(
+            initial={'silo_id': silo_id, 'id': id}, extra=data, silo_pk=silo_id)
 
     return render(request, 'read/edit_value.html', {'form': form, 'silo_id': silo_id})
 
 
 @login_required
-def valueDelete(request,id):
+def valueDelete(request, id):
     """
     Delete a value
     """
     silo_id = None
     lvs = LabelValueStore.objects(id=id)[0]
-    owner = Silo.objects.get(id = lvs.silo_id).owner
+    owner = Silo.objects.get(id=lvs.silo_id).owner
 
     if str(owner.username) == str(request.user):
         silo_id = lvs.silo_id
         lvs.delete()
     else:
-        messages.error(request, "You don't have the permission to delete records from this silo")
+        messages.error(
+            request, "You don't have the permission to delete records from this silo")
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
     messages.success(request, "Record deleted successfully")
@@ -1629,7 +1684,8 @@ def export_silo(request, id):
                 val = row.get(col, '')
                 if isinstance(val, dict):
                     try:
-                        val = smart_text(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(val['$date']/1000)))
+                        val = smart_text(time.strftime(
+                            '%Y-%m-%d %H:%M:%S', time.localtime(val['$date']/1000)))
                     except KeyError as e:
                         try:
                             val = smart_text(val['$oid'])
@@ -1645,17 +1701,21 @@ def export_silo(request, id):
 @login_required
 def anonymizeTable(request, id):
     lvs = db.label_value_store.find({"silo_id": int(id)})
-    piif_cols = PIIColumn.objects.values_list("fieldname",flat=True).order_by('fieldname')
+    piif_cols = PIIColumn.objects.values_list(
+        "fieldname", flat=True).order_by('fieldname')
     fields_to_remove = {}
     for row in lvs:
         for k in row:
             if k in piif_cols:
-                if k == "_id" or k == "silo_id" or k == "create_date" or k == "edit_date": continue
+                if k == "_id" or k == "silo_id" or k == "create_date" or k == "edit_date":
+                    continue
                 fields_to_remove[str(k)] = ""
 
     if fields_to_remove:
-        res = db.label_value_store.update_many({"silo_id": int(id)}, { "$unset": fields_to_remove})
-        messages.success(request, "Table has been annonymized! But do review it again.")
+        res = db.label_value_store.update_many(
+            {"silo_id": int(id)}, {"$unset": fields_to_remove})
+        messages.success(
+            request, "Table has been annonymized! But do review it again.")
     else:
         messages.info(request, "No PIIF columns were found.")
 
@@ -1677,9 +1737,10 @@ def identifyPII(request, silo_id):
     columns = request.POST.getlist("cols[]")
 
     for i, c in enumerate(columns):
-        col, created = PIIColumn.objects.get_or_create(fieldname=c, defaults={'owner': request.user})
+        col, created = PIIColumn.objects.get_or_create(
+            fieldname=c, defaults={'owner': request.user})
 
-    return JsonResponse({"status":"success"})
+    return JsonResponse({"status": "success"})
 
 
 @login_required
@@ -1691,7 +1752,7 @@ def removeSource(request, silo_id, read_id):
     try:
         silo = Silo.objects.get(pk=silo_id)
     except Silo.DoesNotExist as e:
-        messages.error(request,"Table with id=%s does not exist." % silo_id)
+        messages.error(request, "Table with id=%s does not exist." % silo_id)
         return HttpResponseRedirect(reverse_lazy('list_silos'))
 
     try:
@@ -1700,9 +1761,11 @@ def removeSource(request, silo_id, read_id):
         silo.reads.remove(read)
         if Silo.objects.filter(reads__pk=read.id).count() == 0:
             read.delete()
-        messages.success(request,"%s has been removed successfully" % read_name)
+        messages.success(
+            request, "%s has been removed successfully" % read_name)
     except Read.DoesNotExist as e:
-        messages.error(request,"Datasource with id=%s does not exist." % read_id)
+        messages.error(
+            request, "Datasource with id=%s does not exist." % read_id)
 
     return HttpResponseRedirect(reverse_lazy('silo_detail', kwargs={'silo_id': silo_id},))
 
@@ -1718,44 +1781,46 @@ def newFormulaColumn(request, pk):
         if column_name == "":
             column_name = operation
 
-        #now add the resutls to the mongodb database
+        # now add the resutls to the mongodb database
         lvs = LabelValueStore.objects(silo_id=silo.pk)
-        calc_result = calculateFormulaColumn(lvs,operation,cols,column_name)
-        messages.add_message(request,calc_result[0],calc_result[1])
+        calc_result = calculateFormulaColumn(lvs, operation, cols, column_name)
+        messages.add_message(request, calc_result[0], calc_result[1])
 
         if calc_result[0] == messages.ERROR:
             return HttpResponseRedirect(reverse_lazy('newFormulaColumn', kwargs={'pk': pk}))
-        #now add the formula to the mysql database
+        # now add the formula to the mysql database
         mapping = json.dumps(cols)
-        (fcm, created) = FormulaColumn.objects.get_or_create(mapping=mapping,\
-                                                operation=operation,\
-                                                column_name=column_name)
+        (fcm, created) = FormulaColumn.objects.get_or_create(mapping=mapping,
+                                                             operation=operation,
+                                                             column_name=column_name)
         fcm.save()
         silo.formulacolumns.add(fcm)
-        addColsToSilo(silo,[column_name], {column_name : 'float'})
+        addColsToSilo(silo, [column_name], {column_name: 'float'})
         silo.save()
 
         return HttpResponseRedirect(reverse_lazy('silo_detail', kwargs={'silo_id': pk},))
 
     silo = Silo.objects.get(pk=pk)
     cols = getSiloColumnNames(pk)
-    return render(request, "silo/add-formula-column.html", {'silo':silo,'cols': cols})
+    return render(request, "silo/add-formula-column.html", {'silo': silo, 'cols': cols})
 
 
 @login_required
 def editColumnOrder(request, pk):
     if request.method == 'POST':
         try:
-            #this is not done using utility functions since it is a complete replacement
+            # this is not done using utility functions since it is a complete replacement
             silo = Silo.objects.get(pk=pk)
             cols = []
             cols_list = request.POST.getlist("columns")
             col_types = getColToTypeDict(silo)
             for col in cols_list:
-                cols.append({'name' : col, 'type': col_types.get(col,'string')})
+                cols.append(
+                    {'name': col, 'type': col_types.get(col, 'string')})
             visible_cols_set = set(cols_list)
 
-            cols.extend([x for x in json.loads(silo.columns) if (x if isinstance(x, basestring) else x['name']) not in visible_cols_set])
+            cols.extend([x for x in json.loads(silo.columns) if (
+                x if isinstance(x, basestring) else x['name']) not in visible_cols_set])
             silo.columns = json.dumps(cols)
             silo.save()
 
@@ -1763,12 +1828,11 @@ def editColumnOrder(request, pk):
             messages.error(request, "silo not found")
             return HttpResponseRedirect(reverse_lazy('list_silos'))
 
-
         return HttpResponseRedirect(reverse_lazy('silo_detail', kwargs={'silo_id': pk},))
 
     silo = Silo.objects.get(pk=pk)
     cols = getSiloColumnNames(pk)
-    return render(request, "display/edit-column-order.html", {'silo':silo,'cols': cols})
+    return render(request, "display/edit-column-order.html", {'silo': silo, 'cols': cols})
 
 
 @login_required
@@ -1784,7 +1848,6 @@ def addColumnFilter(request, pk):
         silo.save()
         return HttpResponseRedirect(reverse_lazy('silo_detail', kwargs={'silo_id': pk},))
 
-
     silo = Silo.objects.get(pk=pk)
     cols = getCompleteSiloColumnNames(pk)
 
@@ -1794,7 +1857,7 @@ def addColumnFilter(request, pk):
         row['conditional'] = json.dumps(row['conditional'])
 
     cols.sort()
-    return render(request, "display/add-column-filter.html", {'silo':silo,'cols': cols, 'hidden_cols': hidden_cols, 'hidden_rows': hidden_rows})
+    return render(request, "display/add-column-filter.html", {'silo': silo, 'cols': cols, 'hidden_cols': hidden_cols, 'hidden_rows': hidden_rows})
 
 
 @login_required
@@ -1803,8 +1866,7 @@ def export_silo_form(request, id):
     if request.method == 'POST':
         query = makeQueryForHiddenRow(json.loads(request.POST.get('query')))
         shown_cols = request.POST.get('shown_cols')
-        return HttpResponseRedirect(request.POST.get('url') +"?query=%s&shown_cols=%s" % (query, shown_cols))
-
+        return HttpResponseRedirect(request.POST.get('url') + "?query=%s&shown_cols=%s" % (query, shown_cols))
 
     silo = Silo.objects.get(pk=id)
     cols = getCompleteSiloColumnNames(id)
@@ -1814,15 +1876,15 @@ def export_silo_form(request, id):
         row['conditional'] = json.dumps(row['conditional'])
 
     cols.sort()
-    return render(request, "display/export_form.html", {'silo':silo,'cols': cols, 'shown_cols': shown_cols, 'hidden_rows': hidden_rows})
+    return render(request, "display/export_form.html", {'silo': silo, 'cols': cols, 'shown_cols': shown_cols, 'hidden_rows': hidden_rows})
 
 
 @login_required
 def renewAutoJobs(request, read_pk, operation):
     read = Read.objects.get(pk=read_pk)
     if request.user != read.owner:
-        #return not owner of import page
-        return render(request, "display/read_renew.html", {'message' : 'You must be the owner of the import to renew it'})
+        # return not owner of import page
+        return render(request, "display/read_renew.html", {'message': 'You must be the owner of the import to renew it'})
 
     # when go to this url change the read expiration date to 170 days from now
     if operation == "pull" and read.autopull_frequency and (read.autopull_frequency == 'weekly' or read.autopull_frequency == 'daily'):
@@ -1830,15 +1892,15 @@ def renewAutoJobs(request, read_pk, operation):
     elif operation == "push" and read.autopush_frequency and (read.autopush_frequency == 'weekly' or read.autopush_frequency == 'daily'):
         read.autopush_expiration = datetime.datetime.now() + datetime.timedelta(days=170)
     else:
-        return render(request, "display/renew_read.html", {'message' : 'Error, auto%s renewal of %s is not a valid operation' % (operation, read.read_name)})
+        return render(request, "display/renew_read.html", {'message': 'Error, auto%s renewal of %s is not a valid operation' % (operation, read.read_name)})
     read.save()
 
-    return render(request, "display/renew_read.html", {'message' : 'Success, your renewal of %s auto%s was successful' % (read.read_name, operation)})
+    return render(request, "display/renew_read.html", {'message': 'Success, your renewal of %s auto%s was successful' % (read.read_name, operation)})
 
 
 @login_required
 def setColumnType(request, pk):
-    #should only deal with post request since this will operate with a modal
+    # should only deal with post request since this will operate with a modal
     if request.method != 'POST':
         messages.error(request, '%s request is invalid' % request.method)
         return HttpResponseRedirect(reverse_lazy('silo_detail', kwargs={'silo_id': pk}))
