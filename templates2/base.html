@@ -146,7 +146,7 @@
                   >
                 </li>
                 {%getDataImports as apps%} {%for app in apps%}
-                <li>
+                <li class="disabled">
                   <a href="/{{app.0}}"
                     ><span class="glyphicon glyphicon-list-alt"></span> Import
                     from {{ app.1 }}</a

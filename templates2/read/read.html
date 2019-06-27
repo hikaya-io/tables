@@ -44,7 +44,7 @@
 {% if get_tables %}
 
 
-<div class="panel panel-info mt-10">
+<div class="panel panel-default mt-10">
     <div class="panel-heading">
         <h3 class="panel-title">Tables using this source</h3>
     </div>
@@ -53,7 +53,7 @@
         <ul class="list-pointer">
           {% for item in get_tables %}
           <li>
-            <a href="/silo_detail/{{ item.id }}">{{ item.name }}</a>
+            <a href="/silo_detail/{{ item.id }}/">{{ item.name }}</a>
           </li>
           {% endfor %}
         </ul>

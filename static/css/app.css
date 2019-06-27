@@ -674,7 +674,7 @@ input[type=number]::-webkit-outer-spin-button {
     border-bottom: 1px solid #dddddd !important;
 }
 
-.table>tbody>tr>td {
+.table>tbody>tr>td, .table>th {
     vertical-align: middle;
 }
 

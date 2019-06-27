@@ -1,8 +1,8 @@
-{% extends "base.html" %} 
-{% block page_title %}{% endblock %} 
+{% extends "base.html" %} {% block content %}
+<div class="sub-navigation">
+  <div class="sub-navigation-header">
+    <h4 class="page-title">Merge Tables</h4>
+  </div>
+</div>
 
-{% block content %}
-
-    {% include "display/merge-column-form-inner.html" %}
-
-{% endblock %}
+{% include "display/merge-column-form-inner.html" %} {% endblock %}
