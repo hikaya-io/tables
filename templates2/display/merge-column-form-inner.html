@@ -2,6 +2,7 @@
 
 <div style="display:none;">{{ from_silo_id }}</div>
 <div style="display:none;">{{ to_silo_id }}</div>
+
 <div class="modal fade" id="myModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -10,8 +11,9 @@
                 <h4 class="modal-title">Column Aggregation Options</h4>
             </div>
             <div class="modal-body">
-                <p>Select how to aggregate the columns&hellip;</p>
-                <select id="merge_type">
+                <p>Select how to aggregate the columns</p>
+                <select id="merge_type" class="form-control">
+                    <option value=""></option>
                     <option value='concatenate'>Join</option>
                     <option value='sum'>Sum</option>
                     <option value='avg'>Avg</option>
@@ -46,7 +48,7 @@
 
 <div id = 'mapped_columns_div' class="table-responsive" style="display: none;">
     <h3>Mapped columns from the two tables are shown below</h3>
-    <table id = 'mapped_columns_table' class='table table-condensed table-bordered'>
+    <table id='mapped_columns_table' class='table'>
         <tr>
             <th>Table One</th>
             <th>Table Two</th>
@@ -59,8 +61,10 @@
 </div>
 
 <div id='step1_div' class="page-header">
-    <h2>Step 1: Columns Selection</h2>
-    <p>Select the columns from each table that you would like to keep and/or map and merge into a single table and click Next.</p>
+    <div class="alert alert-info">
+        <h2>Step 1: Columns Selection</h2>
+        <p>Select the columns from each table that you would like to keep and/or map and merge into a single table and click Next.</p>
+    </div>
     <div id='step1_btns_div'>
         <button id='choose_columns_btn' type="button" class="pull-right btn btn-primary" onclick="select_columns();">Select Columns</button>
     </div>
@@ -68,8 +72,10 @@
 </div>
 
 <div id='step2_div' class="page-header" style='display: none;'>
-    <h2>Step 2: Columns Mapping</h2>
-    <p>Select one or more columns from the left table and then select a single column from the right table and then click on "Map Selected Columns" button</p>
+    <div class="alert alert-info">
+        <h2>Step 2: Columns Mapping</h2>
+        <p>Select one or more columns from the left table and then select a single column from the right table and then click on "Map Selected Columns" button</p>
+    </div>
     <div id='step2_btns_div'>
         <button id='reset_columns_selection' type='button' class='pull-left btn btn-info' onclick='back_to_cols_selection();'>Back</button>
         <button id='map_cols_btn' type="button" class="btn btn-warning pull-right">Map Selected Columns</button>

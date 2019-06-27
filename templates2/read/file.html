@@ -1,26 +1,47 @@
-{% extends "base.html" %}
-{% block page_title %}Get Data From an External Data Collection Tool{% endblock %}
+{% extends "base.html" %} {% block content %}
 
-{% block content %}
+<div class="sub-navigation">
+  <div class="sub-navigation-header">
+    <h4 class="page-title">Get Data From an External Data Collection Tool</h4>
+  </div>
+</div>
+
+<div class="alert alert-info">
 	<p>Select a Table to store the data from your Uploaded File</p>
-    <form action="{{ form_action }}" method="post">{% csrf_token %}
-    {% if request.GET.read_id %}
-        <input type="hidden" name="read_id" value="{{ request.GET.read_id }}">
-    {% else %}
-        <input type="hidden" name="read_id" value="{{ read_id }}">
-    {% endif %}
-    <BR/>
-    Select an Existing table from the drop down:
-	<select name="silo_id">
-		<option value="">-- select --</option>
-	{% for ss in get_silo %}
-		<option value="{{ ss.id }}">{{ ss.name}}</option>
-	{% endfor %}
-	</select>
-	Or Enter a New Table
-	<input type="text" name="new_silo" value="">
-	<input type="hidden" name="id" value="{{ read_obj.id }}">
-	<input type="submit" value="Submit" />
-	</form>
+</div>
+<form action="{{ form_action }}" method="post">
+  {% csrf_token %} {% if request.GET.read_id %}
+  <input class="form-control" type="hidden" name="read_id" value="{{ request.GET.read_id }}" />
+  {% else %}
+  <input class="form-control" type="hidden" name="read_id" value="{{ read_id }}" />
+  {% endif %}
+  <br />
+
+  <div class="row">
+	<div class="col-md-6">
+		<div class="form-group">
+		  <label for="existingTable">Select an Existing table from the drop down:</label>
+		  <select name="silo_id" class="form-control">
+			<option value="">-- select --</option>
+			{% for ss in get_silo %}
+			<option value="{{ ss.id }}">{{ ss.name }}</option>
+			{% endfor %}
+		  </select>
+		</div>
+	</div>
+
+	<div class="col-md-6">
+		<div class="form-group">
+			<label for="newTable">Or Enter a New Table</label>
+			<input class="form-control" id="newTable" type="text" name="new_silo" value="" />
+			<input type="hidden" name="id" value="{{ read_obj.id }}" />
+		</div>
+	</div>
+  </div>
+
+  <div class="form-group text-center">
+	<button type="submit" class="btn btn-primary">Submit</button>
+  </div>
+</form>
 
 {% endblock content %}

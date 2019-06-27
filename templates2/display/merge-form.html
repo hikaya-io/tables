@@ -1,32 +1,43 @@
-{% extends "base.html" %} 
-{% block page_title %}Merge Tables{% endblock %}
-
+{% extends "base.html" %}
 {% block content %}
-    <p>Select a Table to merge your data into.</p>
 
-    <form action="/merge_columns/" method="post">{% csrf_token %}
-    <table border="1">
-        <tr>
-            <th>From Table</th>
-            <th>To Table</th>
-        </tr>
-        <tr>
-            <td>{{ getSource.name }}</td>
-            <td align="middle">
-                <select name="to_silo_id">
-                    {% for item2 in getSourceTo %} 
-                        {% if item2.id != getSource.id  %}
-                            <option value="{{ item2.id }}">{{ item2.name }}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-            </td>
-        </tr>
-    </table>
+<div class="sub-navigation">
+    <div class="sub-navigation-header">
+        <h4 class="page-title">Merge Tables</h4>
+    </div>
+</div>
+<p>Select a Table to merge your data into.</p>
 
-    <br>
-    <input type="hidden" name="from_silo_id" value="{{ getSource.id }}">
-    <input type="submit" value="Submit" />
-    </form>
+<form action="/merge_columns/" method="post">
+  {% csrf_token %}
+  <table class="table">
+    <tr>
+      <th>From Table</th>
+      <th>To Table</th>
+    </tr>
+    <tr>
+      <td>{{ getSource.name }}</td>
+      <td>
+        <select name="to_silo_id" class="form-control" id="to_silo_id">
+          {% for item2 in getSourceTo %} {% if item2.id != getSource.id %}
+          <option value="{{ item2.id }}">{{ item2.name }}</option>
+          {% endif %} {% endfor %}
+        </select>
+      </td>
+    </tr>
+  </table>
+
+  <br />
+  <input type="hidden" name="from_silo_id" value="{{ getSource.id }}" />
+  <p class="text-right">
+      <button type="submit" class="btn btn-info">Merge</button>
+  </p>
+</form>
 
 {% endblock content %}
+
+<script>
+    $(document).ready(() => {
+        $('#to_silo_id').Select2()
+    })
+</script>
