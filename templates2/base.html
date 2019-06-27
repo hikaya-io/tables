@@ -82,7 +82,7 @@
 
     {% endblock %} {% block extra_css %} {% endblock %}
   </head>
-  <body>
+  <body style="margin-top: 52px">
     <!--http://getbootstrap.com/examples/sticky-footer-navbar/-->
     <div
       class="navbar navbar-default navbar-hikaya navbar-fixed-top"
@@ -245,9 +245,15 @@
         <!-- Any messages for users -->
         {% block messages %} {% if messages %} {% for message in messages %} 
         {% if 'safe' in message.tags %}
-        <div class="alert alert-{{ message.tags }}">{{ message | safe }}</div>
+        <div class="alert alert-{{ message.tags }} alert-dismissable">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>          
+          {{ message | safe }}
+        </div>
         {% else %}
-        <div class="alert alert-{{ message.tags }}">{{ message | safe }}</div>
+        <div class="alert alert-{{ message.tags }} alert-dismissable" >
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          {{ message | safe }}
+        </div>
         {% endif %} {% endfor %}
         <br />
         {% endif %} {% endblock messages %}

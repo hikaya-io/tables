@@ -9,6 +9,7 @@
 <div class="alert alert-info">
   <p>Select a Table to store the data from your Uploaded File</p>
 </div>
+
 <form action="{{ form_action }}" method="post">
   {% csrf_token %} {% if request.GET.read_id %}
   <input
