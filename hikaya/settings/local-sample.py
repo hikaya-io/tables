@@ -15,6 +15,26 @@ DEBUG = True #if os.getenv('HIKAYA_DEBUG') == 'True' else False
 ########## END DEBUG CONFIGURATION
 
 
+############ MONGO DB #####################
+MONGODB_DATABASES = {
+    "default": {
+        "name": os.getenv("HIKAYATABLES_MONGODB_NAME"),
+        "host": os.getenv("HIKAYATABLES_MONGODB_HOST", '127.0.0.1'),
+        "port": int(os.getenv("HIKAYATABLES_MONGODB_PORT", 27017)),
+        "username": os.getenv("HIKAYATABLES_MONGODB_USER"),
+        "password": os.getenv("HIKAYATABLES_MONGODB_PASS"),
+    },
+}
+MONGO_URI = 'mongodb://{username}:{password}@{host}:{port}/{db}'.format(
+    db=MONGODB_DATABASES['default']['name'],
+    username=MONGODB_DATABASES['default']['username'],
+    password=MONGODB_DATABASES['default']['password'],
+    host=MONGODB_DATABASES['default']['host'],
+    port=MONGODB_DATABASES['default']['port'],
+)
+################ END OF MONGO DB #######################
+
+
 ########## DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 try:
