@@ -473,7 +473,7 @@
           var shown_cols = $("<input>").attr("type", "hidden").attr("name", "shown_cols").val(JSON.stringify(shown_cols));
           $('#filterformglobal').append($(shown_cols));
 
-          var url = $("<input>").attr("type", "hidden").attr("name", "url").val("/export/{{ silo.id}}");
+          var url = $("<input>").attr("type", "hidden").attr("name", "url").val("/export/{{ silo.id}}/");
           $('#filterformglobal').append($(url));
 
           $("#filterformglobal").submit()
